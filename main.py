@@ -1,10 +1,17 @@
 import customtkinter as ctk
 from PIL import Image
-import sys
+import sys, os
 from strategies import STRATEGIES, Strategy
 
 ctk.set_appearance_mode("light")
 #ctk.set_default_color_theme("blue")
+
+def resource_path(relative_path: str) -> str:
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        base = sys._MEIPASS
+    else:
+        base = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base, relative_path)
 
 class WindowB(ctk.CTkToplevel):
     def __init__(self, master):
@@ -209,6 +216,13 @@ class WindowB(ctk.CTkToplevel):
             text="산개,쉐어 동선",
             font=ctk.CTkFont(size=15)
         ).place(x=5, y=5)
+        
+        self.where_center = ctk.CTkLabel(
+            self.spread_frame,
+            text="/ center: 1, 2징 사이",
+            font=ctk.CTkFont(size=14)
+        )
+        self.where_center.place(x=106, y=5)
 
 
         # -----------선 채가기-----------
@@ -284,6 +298,9 @@ class WindowB(ctk.CTkToplevel):
             self.tower_nodebuff_range_label, 
             self.tower_nodebuff_melee_label
         ]
+
+    def set_center_strat_text(self, text: str):
+        self.where_center.configure(text=text)
 
     def set_xplus_strat_text(self, text: str):
         self.xplus_strat_label.configure(text=text)
@@ -478,36 +495,36 @@ class App(ctk.CTk):
         self.bind("<Map>", self._on_app_restore)
         self.bind("<FocusIn>", self._on_app_restore)
         self.button_icons = {
-            "plus": ctk.CTkImage(Image.open("img/plusmark.png"), size=(50, 50)),
-            "xmark": ctk.CTkImage(Image.open("img/xmark.png"), size=(50, 50)),
-            "1mark": ctk.CTkImage(Image.open("img/1mark.png"), size=(50, 50)),
-            "2mark": ctk.CTkImage(Image.open("img/2mark.png"), size=(50, 50)),
-            "3mark": ctk.CTkImage(Image.open("img/3mark.png"), size=(50, 50)),
-            "4mark": ctk.CTkImage(Image.open("img/4mark.png"), size=(50, 50)),
-            "Amark": ctk.CTkImage(Image.open("img/Amark.png"), size=(50, 50)),
-            "Bmark": ctk.CTkImage(Image.open("img/Bmark.png"), size=(50, 50)),
-            "Cmark": ctk.CTkImage(Image.open("img/Cmark.png"), size=(50, 50)),
-            "Dmark": ctk.CTkImage(Image.open("img/Dmark.png"), size=(50, 50)),
-            "stack": ctk.CTkImage(Image.open("img/stack.png"), size=(50, 50)),
-            "spread": ctk.CTkImage(Image.open("img/spread.png"), size=(50, 50)),
-            "center": ctk.CTkImage(Image.open("img/centermark.png"), size=(50, 50)),
-            "first": ctk.CTkImage(Image.open("img/first.png"), size=(50, 50)),
-            "second": ctk.CTkImage(Image.open("img/second.png"), size=(50, 50)),
-            "third": ctk.CTkImage(Image.open("img/third.png"), size=(50, 50)),
-            "fourth": ctk.CTkImage(Image.open("img/fourth.png"), size=(50, 50)),
-            "stop1": ctk.CTkImage(Image.open("img/stop1.png"), size=(50, 50)),
-            "stop2": ctk.CTkImage(Image.open("img/stop2.png"), size=(50, 50)),
-            "bind1": ctk.CTkImage(Image.open("img/bind1.png"), size=(50, 50)),
-            "bind2": ctk.CTkImage(Image.open("img/bind2.png"), size=(50, 50)),
+            "plus": ctk.CTkImage(Image.open(resource_path("img/plusmark.png")), size=(50, 50)),
+            "xmark": ctk.CTkImage(Image.open(resource_path("img/xmark.png")), size=(50, 50)),
+            "1mark": ctk.CTkImage(Image.open(resource_path("img/1mark.png")), size=(50, 50)),
+            "2mark": ctk.CTkImage(Image.open(resource_path("img/2mark.png")), size=(50, 50)),
+            "3mark": ctk.CTkImage(Image.open(resource_path("img/3mark.png")), size=(50, 50)),
+            "4mark": ctk.CTkImage(Image.open(resource_path("img/4mark.png")), size=(50, 50)),
+            "Amark": ctk.CTkImage(Image.open(resource_path("img/Amark.png")), size=(50, 50)),
+            "Bmark": ctk.CTkImage(Image.open(resource_path("img/Bmark.png")), size=(50, 50)),
+            "Cmark": ctk.CTkImage(Image.open(resource_path("img/Cmark.png")), size=(50, 50)),
+            "Dmark": ctk.CTkImage(Image.open(resource_path("img/Dmark.png")), size=(50, 50)),
+            "stack": ctk.CTkImage(Image.open(resource_path("img/stack.png")), size=(50, 50)),
+            "spread": ctk.CTkImage(Image.open(resource_path("img/spread.png")), size=(50, 50)),
+            "center": ctk.CTkImage(Image.open(resource_path("img/centermark.png")), size=(50, 50)),
+            "first": ctk.CTkImage(Image.open(resource_path("img/first.png")), size=(50, 50)),
+            "second": ctk.CTkImage(Image.open(resource_path("img/second.png")), size=(50, 50)),
+            "third": ctk.CTkImage(Image.open(resource_path("img/third.png")), size=(50, 50)),
+            "fourth": ctk.CTkImage(Image.open(resource_path("img/fourth.png")), size=(50, 50)),
+            "stop1": ctk.CTkImage(Image.open(resource_path("img/stop1.png")), size=(50, 50)),
+            "stop2": ctk.CTkImage(Image.open(resource_path("img/stop2.png")), size=(50, 50)),
+            "bind1": ctk.CTkImage(Image.open(resource_path("img/bind1.png")), size=(50, 50)),
+            "bind2": ctk.CTkImage(Image.open(resource_path("img/bind2.png")), size=(50, 50)),
         }
 
         self.display_map = {
-            1: ctk.CTkImage(Image.open("img/plusmark.png"), size=(70, 70)),
-            2: ctk.CTkImage(Image.open("img/xmark.png"), size=(70, 70)),
-            3: ctk.CTkImage(Image.open("img/Amark.png"), size=(70, 70)),
-            4: ctk.CTkImage(Image.open("img/Cmark.png"), size=(70, 70)),
-            5: ctk.CTkImage(Image.open("img/Bmark.png"), size=(70, 70)),
-            6: ctk.CTkImage(Image.open("img/Dmark.png"), size=(70, 70)),
+            1: ctk.CTkImage(Image.open(resource_path("img/plusmark.png")), size=(70, 70)),
+            2: ctk.CTkImage(Image.open(resource_path("img/xmark.png")), size=(70, 70)),
+            3: ctk.CTkImage(Image.open(resource_path("img/Amark.png")), size=(70, 70)),
+            4: ctk.CTkImage(Image.open(resource_path("img/Cmark.png")), size=(70, 70)),
+            5: ctk.CTkImage(Image.open(resource_path("img/Bmark.png")), size=(70, 70)),
+            6: ctk.CTkImage(Image.open(resource_path("img/Dmark.png")), size=(70, 70)),
         }
 
         self.marker_move_icons_map = {
@@ -521,8 +538,8 @@ class App(ctk.CTk):
         }
         
         self.safe_spot_img_map = {
-            "rl": ctk.CTkImage(Image.open("img/rlsafe.png"), size=(60, 60)),
-            "ud": ctk.CTkImage(Image.open("img/udsafe.png"), size=(60, 60)),
+            "rl": ctk.CTkImage(Image.open(resource_path("img/rlsafe.png")), size=(60, 60)),
+            "ud": ctk.CTkImage(Image.open(resource_path("img/udsafe.png")), size=(60, 60)),
         }
 
         self.strategy: Strategy = STRATEGIES["09stop"]
@@ -589,6 +606,8 @@ class App(ctk.CTk):
 
         self._build_ui()
 
+    
+
     def apply_b_controls(self):
         if self.ignore_click.get():
             self.lock_move.set(True)  # 클릭 무시 중엔 이동도 잠그기
@@ -614,6 +633,7 @@ class App(ctk.CTk):
     def apply_strategy_to_ui(self):
         self.win_b.set_tower_check_texts(self.strategy.tower_texts)
         self.win_b.set_check_strat_text(self.strategy.check_strat_text)
+        self.win_b.set_center_strat_text(self.strategy.where_center)
 
         # 이미 선택된 게 있으면 화면 재반영
         if self.last_btn_3_10 is not None:

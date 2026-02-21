@@ -6,6 +6,7 @@ class Strategy:
     key: str
     display_name: str                 # "09stop", "game8"
     check_strat_text: str
+    where_center: str
     tower_texts: List[str]
 
     text_3_10: Dict[int, str]         # 버튼 3~10 로그 텍스트
@@ -28,6 +29,7 @@ STRATEGIES: Dict[str, Strategy] = {
         key="09stop",
         display_name="09stop",
         check_strat_text="현재 처리법: 09stop",
+        where_center="/ center: 1, 2징 사이",
         tower_texts=[
             "에어로가(공중): 보스정면에 딱 붙기",
             "죽선(빔): 숫자징 뒤쪽 변에 서기",
@@ -74,6 +76,7 @@ STRATEGIES: Dict[str, Strategy] = {
         key="game8",
         display_name="Game8",
         check_strat_text="현재 처리법: Game8",
+        where_center="/ center: C징",
         tower_texts=[
             "에어로가(공중): 남쪽 타겟서클 위",
             "죽선(빔): 남쪽 숫자징 모서리 서기",
