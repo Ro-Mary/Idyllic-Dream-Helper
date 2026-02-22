@@ -635,8 +635,6 @@ class App(ctk.CTk):
 
         self._build_ui()
 
-    
-
     def apply_b_controls(self):
         if self.ignore_click.get():
             self.lock_move.set(True)  # 클릭 무시 중엔 이동도 잠그기
@@ -646,6 +644,7 @@ class App(ctk.CTk):
     def on_strats_changed(self, value: str):
         self.reset_all()
         self.strategy = STRATEGIES[value]
+        self.apply_3to10_button_icons_by_strats()
         self.apply_strategy_to_ui()
         
     def apply_3to10_visual(self, n: int):
@@ -1236,6 +1235,21 @@ class App(ctk.CTk):
     def append_fix(self):
         self.win_b.append_line("----------(수정)----------")
 
+    def apply_3to10_button_icons_by_strats(self):
+        mapping = self.strategy.btn_icon_map
+
+        for btn_num in range(3, 11):
+            btn = self.buttons.get(btn_num)
+            if not btn:
+                continue
+
+            icon_key = mapping.get(btn_num)
+            if icon_key:
+                btn.configure(
+                    image=self.button_icons[icon_key],
+                    text=""
+                )
+
     #(A,B) 같은 2개 중 하나만 비활성화되는 "상호배타" 로직 공통 처리.
     def handle_exclusive_pair(self, new_n: int, last_attr: str, other_n: int, fix_on_switch: bool = True):
         last = getattr(self, last_attr)
@@ -1338,7 +1352,7 @@ class App(ctk.CTk):
         self.win_b.append_line(self.get_3to10_label(n))
 
         if self.last_btn_3_10 is not None and self.last_btn_3_10 != n:
-            self.win_b.append_line("(수정)")
+            self.win_b.append_line("----------(수정)----------")
             self.enable_btn(self.last_btn_3_10)
 
         self.disable_btn(n)

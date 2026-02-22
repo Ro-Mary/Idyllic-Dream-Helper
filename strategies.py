@@ -12,6 +12,7 @@ class Strategy:
     text_3_10: Dict[int, str]         # 버튼 3~10 로그 텍스트
     btn_to_mark: Dict[int, str]       # 3~10 -> "Amark" 같은 마크 이미지 키
     check_img_key_map: Dict[int, str] # 3~10 -> "first" 같은 체크 이미지 키
+    btn_icon_map: Dict[int, str]      # 바닥징
 
     spread_map_1: Dict[int, str]      # isSpread==1 결과 문자열
     spread_map_2: Dict[int, str]      # isSpread==2 결과 문자열
@@ -70,6 +71,16 @@ STRATEGIES: Dict[str, Strategy] = {
             9:"2 - C - 2 - center",
             10:"2 - center - 2 - C",
         },
+        btn_icon_map={
+            3: "Amark",
+            4: "1mark",
+            5: "Bmark",
+            6: "2mark",
+            7: "Cmark",
+            8: "3mark",
+            9: "Dmark",
+            10: "4mark",
+        },
     ),
 
     "game8": Strategy(
@@ -116,6 +127,16 @@ STRATEGIES: Dict[str, Strategy] = {
             8:"4 - center - 4 - center",
             9:"4 - center - 4 - center",
             10:"3 - center - 3 - center",
+        },
+        btn_icon_map={
+            3: "Amark",
+            4: "2mark",
+            5: "Bmark",
+            6: "3mark",
+            7: "Cmark",
+            8: "4mark",
+            9: "Dmark",
+            10: "1mark",
         },
     ),
 }
