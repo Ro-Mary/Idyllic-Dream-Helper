@@ -20,15 +20,15 @@ class WindowB(ctk.CTkToplevel):
         self.geometry("400x400")
         self.configure(fg_color="#5692b8")
 
-        # X 버튼 막기 (닫히지 않게)
-        self.protocol("WM_DELETE_WINDOW", lambda: None)
-        self.overrideredirect(True)
-
         icon_path = resource_path("icon.ico")
         try:
             self.iconbitmap(icon_path)
         except Exception:
             pass
+
+        # X 버튼 막기 (닫히지 않게)
+        self.protocol("WM_DELETE_WINDOW", lambda: None)
+        self.overrideredirect(True)
 
         # 드래그 이동 구현
         self.bind("<ButtonPress-1>", self.start_move)
@@ -208,14 +208,23 @@ class WindowB(ctk.CTkToplevel):
             width=220,
             height=90
         )
-        self.marker_frame.place(x=4, y=35)
+        self.marker_frame.place(x=4, y=32)
 
         self.marker_labels = []
+        self.marker_text_labels = []
         self.marker_refs = [None, None, None, None]
         for i in range(4):
-            lbl = ctk.CTkLabel(self.marker_frame, text="")
-            lbl.pack(side="left", padx=3.5, pady=5)
-            self.marker_labels.append(lbl)
+            cell = ctk.CTkFrame(self.marker_frame, fg_color="transparent")
+            cell.pack(side="left", padx=3.5, pady=0)
+
+            img_lbl = ctk.CTkLabel(cell, text="")
+            img_lbl.pack(pady=(0, 0))
+
+            txt_lbl = ctk.CTkLabel(cell, text="", font=ctk.CTkFont(size=13))
+            txt_lbl.pack(pady=(0, 0))
+
+            self.marker_labels.append(img_lbl)
+            self.marker_text_labels.append(txt_lbl)
 
         ctk.CTkLabel(
             self.spread_frame,
@@ -345,12 +354,19 @@ class WindowB(ctk.CTkToplevel):
         self.check_label.configure(image=display_img, text="")
         self.update_idletasks()
 
-    def set_4_icons(self, icons: list[ctk.CTkImage | None]):
-        padded = (icons + [None, None, None, None])[:4]
-        for i, img in enumerate(padded):
+    def set_4_icons(self, icons: list[ctk.CTkImage | None], texts: list[str]):
+        padded_icons = (icons + [None, None, None, None])[:4]
+        padded_texts = (texts + ["", "", "", ""])[:4]
+
+        for i in range(4):
+            img = padded_icons[i]
+            text = padded_texts[i]
+
             self.marker_refs[i] = img
             display_img = img if img is not None else self._blank_img
             self.marker_labels[i].configure(image=display_img, text="")
+            self.marker_text_labels[i].configure(text=text)
+
         self.update_idletasks()
 
     def set_shift_status(self, enabled: bool):
@@ -498,6 +514,7 @@ class App(ctk.CTk):
         self._btn_normal_color: dict[int, any] = {}
         #self._btn_disabled_color = "#3A3A3A"
 
+        
         icon_path = resource_path("icon.ico")
         try:
             self.iconbitmap(icon_path)
@@ -1146,7 +1163,7 @@ class App(ctk.CTk):
             width=50, 
             height=50
         )
-        Bsafe.place(x=10, y=35)
+        Bsafe.place(x=80, y=35)
         self.buttons[18] = Bsafe
 
         Dsafe = ctk.CTkButton(
@@ -1161,7 +1178,7 @@ class App(ctk.CTk):
             width=50, 
             height=50
         )
-        Dsafe.place(x=80, y=35)
+        Dsafe.place(x=10, y=35)
         self.buttons[19] = Dsafe
        
         reset_button = ctk.CTkButton(
@@ -1235,7 +1252,7 @@ class App(ctk.CTk):
         for n in self.buttons.keys():
             self.enable_btn(n)
         self.win_b.clear()
-        self.win_b.set_4_icons([None, None, None, None])
+        self.win_b.set_4_icons([None, None, None, None], ["", "", "", ""])
         self.win_b.set_check_image(None)
         self.win_b.set_xplus_image(None)
         self.win_b.set_safe_isl_image(None)
@@ -1279,20 +1296,49 @@ class App(ctk.CTk):
         tokens = (tokens + [None, None, None, None])[:4]
 
         icons = []
+        captions = []
+
+        strat_key = self.strategy.key  # "09stop" or "game8"
+
         for t in tokens:
             if t is None:
                 icons.append(None)
-            else:
-                icons.append(self.marker_move_icons_map.get(t))  # 매핑 없으면 None
+                captions.append("")
+                continue
 
-        self.win_b.set_4_icons(icons)
+            token = t  # e.g. "center", "1", "C", "3" ...
+
+            # 아이콘
+            icons.append(self.marker_move_icons_map.get(token))
+
+            # 캡션
+            if token == "center":
+                captions.append("")
+            elif strat_key == "09stop":
+                # 1,2 => 쉐어 / C,D => 산개
+                if token in ("1", "2"):
+                    captions.append("쉐어")
+                elif token in ("C", "D"):
+                    captions.append("산개")
+                else:
+                    captions.append("")  # 혹시 모르는 토큰 대비
+            else:  # game8
+                # 3,4 => 쉐어 / 1,2 => 산개
+                if token in ("3", "4"):
+                    captions.append("쉐어")
+                elif token in ("1", "2"):
+                    captions.append("산개")
+                else:
+                    captions.append("")
+
+        self.win_b.set_4_icons(icons, captions)
 
         # 버튼마다 다른 텍스트 출력
     def handle_3_to_10(self, n: int):
         self.win_b.append_line(self.get_3to10_label(n))
 
         if self.last_btn_3_10 is not None and self.last_btn_3_10 != n:
-            self.win_b.append_line("----------(수정)----------")
+            self.win_b.append_line("(수정)")
             self.enable_btn(self.last_btn_3_10)
 
         self.disable_btn(n)
@@ -1413,7 +1459,7 @@ class App(ctk.CTk):
                 last_attr="last_move",
                 other_n=19
             )
-            self.win_b.append_line("왼쪽 이동")
+            self.win_b.append_line("오른쪽 이동")
             self.win_b.set_safe_isl_image(self.button_icons["Bmark"])
 
         elif n == 19:
@@ -1422,7 +1468,7 @@ class App(ctk.CTk):
                 last_attr="last_move",
                 other_n=18
             )
-            self.win_b.append_line("오른쪽 이동")
+            self.win_b.append_line("왼쪽 이동")
             self.win_b.set_safe_isl_image(self.button_icons["Dmark"])
 
 
