@@ -35,12 +35,12 @@ class WindowB(ctk.CTkToplevel):
         self.bind("<B1-Motion>", self.do_move)
 
         self._click_blocked = False
-        self.bind_all("<Button>", self._block_if_needed, add="+")
-        self.bind_all("<Key>", self._block_if_needed, add="+")
-        self.bind_all("<MouseWheel>", self._block_if_needed, add="+")
 
         self._move_locked = False
         self._drag_enabled = True
+        self._click_through_on = False
+        self._click_through_enabled = False
+        self.bind("<Map>", self._reapply_window_styles, add="+")
 
         # 크기 고정
         self.resizable(False, False)
@@ -313,6 +313,10 @@ class WindowB(ctk.CTkToplevel):
             self.tower_nodebuff_range_label, 
             self.tower_nodebuff_melee_label
         ]
+        
+        self.after(200, self._ensure_layered)
+        self.after(0, lambda: (self.deiconify(), self.lift(), self.focus_force()))
+        self.after(10, lambda: self.attributes("-topmost", True))
 
     def set_center_strat_text(self, text: str):
         self.where_center.configure(text=text)
@@ -372,10 +376,76 @@ class WindowB(ctk.CTkToplevel):
     def set_shift_status(self, enabled: bool):
         self.swap_label.configure(text="교대(O)" if enabled else "교대 없음(X)")
 
+    def _reapply_window_styles(self, event=None):
+        # 창이 다시 표시될 때 click-through 상태 재적용
+        try:
+            self._apply_click_through_style(self._click_through_enabled)
+        except Exception:
+            pass
+
+    def _ensure_layered(self):
+        if sys.platform != "win32":
+            return
+        import ctypes
+        from ctypes import wintypes
+        user32 = ctypes.windll.user32
+
+        self.update_idletasks()
+        hwnd = self._get_hwnd()
+        if not hwnd:
+            self.after(100, self._ensure_layered)
+            return
+
+        GWL_EXSTYLE = -20
+        WS_EX_LAYERED = 0x00080000
+
+        if ctypes.sizeof(ctypes.c_void_p) == 8:
+            GetWindowLong = user32.GetWindowLongPtrW
+            SetWindowLong = user32.SetWindowLongPtrW
+            GetWindowLong.restype = ctypes.c_longlong
+            SetWindowLong.restype = ctypes.c_longlong
+        else:
+            GetWindowLong = user32.GetWindowLongW
+            SetWindowLong = user32.SetWindowLongW
+            GetWindowLong.restype = ctypes.c_long
+            SetWindowLong.restype = ctypes.c_long
+
+        GetWindowLong.argtypes = [wintypes.HWND, ctypes.c_int]
+        SetWindowLong.argtypes = [wintypes.HWND, ctypes.c_int, GetWindowLong.restype]
+
+        exstyle = GetWindowLong(hwnd, GWL_EXSTYLE)
+        if not (exstyle & WS_EX_LAYERED):
+            exstyle |= WS_EX_LAYERED
+            SetWindowLong(hwnd, GWL_EXSTYLE, exstyle)
+
+    def _get_hwnd(self) -> int:
+        """항상 '최상위(루트) HWND'를 반환해서 적용/해제 대상이 바뀌지 않게 한다."""
+        if sys.platform != "win32":
+            return 0
+        import ctypes
+        user32 = ctypes.windll.user32
+
+        self.update_idletasks()
+        hwnd = self.winfo_id()
+        if not hwnd:
+            return 0
+
+        # GA_ROOT = 2 : 최상위 루트 윈도우 핸들로 통일
+        GA_ROOT = 2
+        root = user32.GetAncestor(hwnd, GA_ROOT)
+        return root if root else hwnd
+
+
     def set_click_through(self, enabled: bool):
         """Windows: 창을 클릭-스루(뒤에 클릭 전달)로 토글"""
+        self._click_through_enabled = enabled
+        self._apply_click_through_style(enabled)
+
+
+    def _apply_click_through_style(self, enabled: bool):
+        import sys
         if sys.platform != "win32":
-            # 다른 OS는 완전 click-through 보장 어려움
+            # mac/linux: 완전 click-through는 보장 불가. (원하면 disable 정도만)
             try:
                 self.attributes("-disabled", enabled)
             except Exception:
@@ -387,18 +457,17 @@ class WindowB(ctk.CTkToplevel):
 
         user32 = ctypes.windll.user32
 
-        # ✅ 핸들 준비 보장
-        self.update_idletasks()
-
-        hwnd = self.winfo_id()
-        # ✅ 중요: Tk는 내부 child HWND를 주는 경우가 많아 부모 HWND에 적용해야 함
-        hwnd = user32.GetParent(hwnd)
+        hwnd = self._get_hwnd()
+        if not hwnd:
+            # 핸들이 아직 준비 안됐으면 다음 틱에 재시도
+            self.after(50, lambda: self._apply_click_through_style(enabled))
+            return
 
         GWL_EXSTYLE = -20
         WS_EX_LAYERED = 0x00080000
         WS_EX_TRANSPARENT = 0x00000020
 
-        # 32/64비트 호환 처리
+        # 64bit/32bit 호환
         if ctypes.sizeof(ctypes.c_void_p) == 8:
             GetWindowLong = user32.GetWindowLongPtrW
             SetWindowLong = user32.SetWindowLongPtrW
@@ -416,25 +485,15 @@ class WindowB(ctk.CTkToplevel):
         exstyle = GetWindowLong(hwnd, GWL_EXSTYLE)
 
         if enabled:
-            # layered + transparent 켜기
+            # click-through를 쓰려면 layered가 같이 필요함
             exstyle |= (WS_EX_LAYERED | WS_EX_TRANSPARENT)
-            # layered 확정용: 거의 불투명하게
-            try:
-                self.attributes("-alpha", 0.99)
-            except Exception:
-                pass
         else:
-            # transparent/layered 끄기
+            # ✅ 핵심: layered는 굳이 빼지 말고, transparent만 확실히 제거
             exstyle &= ~WS_EX_TRANSPARENT
-            exstyle &= ~WS_EX_LAYERED
-            try:
-                self.attributes("-alpha", 1.0)
-            except Exception:
-                pass
 
         SetWindowLong(hwnd, GWL_EXSTYLE, exstyle)
 
-        # 스타일 변경 즉시 반영
+        # 스타일 즉시 반영
         SWP_NOMOVE = 0x0002
         SWP_NOSIZE = 0x0001
         SWP_NOZORDER = 0x0004
@@ -447,20 +506,14 @@ class WindowB(ctk.CTkToplevel):
         display_img = img if img is not None else self._blank_img
         self.line_img_label.configure(image=display_img, text="")
         self.line_text_label.configure(text=text)
-        self.update_idletasks()
-        
-
-    def _block_if_needed(self, event):
-        # 이 이벤트가 B창 소속일 때만 막기
-        if getattr(self, "_click_blocked", False):
-            try:
-                if event.widget.winfo_toplevel() == self:
-                    return "break"
-            except Exception:
-                pass
+        self.update_idletasks()       
     
     def set_move_locked(self, locked: bool):
         self._move_locked = locked
+
+    def _reapply_window_styles(self, event=None):
+        # 복원(Map) 시점에 현재 토글 상태를 그대로 재적용
+        self.after(50, lambda: self._apply_click_through_style(self._click_through_enabled))
 
     # topmost 재적용 + 앞으로 올리기
     def ensure_on_top(self):
@@ -634,6 +687,9 @@ class App(ctk.CTk):
         cb_ignore_click.place(x=10, y=45)
 
         self._build_ui()
+        self.win_b.update_idletasks()
+        self.win_b.deiconify()
+        self.win_b.lift()
 
     def apply_b_controls(self):
         if self.ignore_click.get():
@@ -1231,6 +1287,10 @@ class App(ctk.CTk):
         if hasattr(self, "win_b") and self.win_b.winfo_exists():
             # 최소화 상태였다가 돌아오면 topmost가 풀리는 경우가 있어 재적용
             self.win_b.after(0, self.win_b.ensure_on_top)
+                # click-through도 켜져 있었다면 재적용
+            if getattr(self.win_b, "_click_through_on", False):
+                self.win_b.after(50, lambda: self.win_b.set_click_through(True))
+            
 
     def append_fix(self):
         self.win_b.append_line("----------(수정)----------")
