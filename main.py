@@ -24,6 +24,12 @@ class WindowB(ctk.CTkToplevel):
         self.protocol("WM_DELETE_WINDOW", lambda: None)
         self.overrideredirect(True)
 
+        icon_path = resource_path("icon.ico")
+        try:
+            self.iconbitmap(icon_path)
+        except Exception:
+            pass
+
         # 드래그 이동 구현
         self.bind("<ButtonPress-1>", self.start_move)
         self.bind("<B1-Motion>", self.do_move)
@@ -491,6 +497,12 @@ class App(ctk.CTk):
         self._btn_enabled: dict[int, bool] = {}
         self._btn_normal_color: dict[int, any] = {}
         #self._btn_disabled_color = "#3A3A3A"
+
+        icon_path = resource_path("icon.ico")
+        try:
+            self.iconbitmap(icon_path)
+        except Exception:
+            pass
 
         self.bind("<Map>", self._on_app_restore)
         self.bind("<FocusIn>", self._on_app_restore)
@@ -1280,7 +1292,7 @@ class App(ctk.CTk):
         self.win_b.append_line(self.get_3to10_label(n))
 
         if self.last_btn_3_10 is not None and self.last_btn_3_10 != n:
-            self.win_b.append_line("(수정)")
+            self.win_b.append_line("----------(수정)----------")
             self.enable_btn(self.last_btn_3_10)
 
         self.disable_btn(n)
