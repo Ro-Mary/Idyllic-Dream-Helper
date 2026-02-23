@@ -1324,6 +1324,8 @@ class App(ctk.CTk):
 
     def reset_all(self):
         for n in self.buttons.keys():
+            if n in (21, 22):
+                continue
             self.enable_btn(n)
         self.win_b.clear()
         self.win_b.set_4_icons([None, None, None, None], ["", "", "", ""])
@@ -1342,8 +1344,8 @@ class App(ctk.CTk):
         self.last_move = None
         self.isSpread = 0
         self.toggle_15_on = False
-        self.last_main = 21
-        self.disable_btn(21)
+        #self.last_main = 21
+        #self.disable_btn(21)
         self.update_xplus_strat_label()
 
     def set_is_spread(self, value: int):
