@@ -17,7 +17,7 @@ class WindowB(ctk.CTkToplevel):
     def __init__(self, master):
         super().__init__(master)
         self.title("출력")
-        self.geometry("400x400")
+        self.geometry("380x408")
         self.configure(fg_color="#5692b8")
 
         icon_path = resource_path("icon.ico")
@@ -34,10 +34,7 @@ class WindowB(ctk.CTkToplevel):
         self.bind("<ButtonPress-1>", self.start_move)
         self.bind("<B1-Motion>", self.do_move)
 
-        self._click_blocked = False
-
         self._move_locked = False
-        self._drag_enabled = True
         self._click_through_enabled = False
         self.bind("<Map>", self._reapply_window_styles, add="+")
 
@@ -51,7 +48,7 @@ class WindowB(ctk.CTkToplevel):
         self.check_strat_frame = ctk.CTkFrame(
             self,
             fg_color="#f0fbff",
-            width=390,
+            width=370,
             height=37
         )
         self.check_strat_frame.place(x=5, y=5)
@@ -67,11 +64,12 @@ class WindowB(ctk.CTkToplevel):
         self.container = ctk.CTkFrame(
             self,
             fg_color="#f0fbff",
-            width=390,
-            height=350
+            width=370,
+            height=358
             )
         self.container.place(x=5, y=45)
 
+        '''
         # -----------로그-----------
         self.log_frame = ctk.CTkFrame(
             self.container,
@@ -96,30 +94,32 @@ class WindowB(ctk.CTkToplevel):
         self.log_box.place(x=5, y=35)
         self.log_box.configure(state="disabled")
 
+        '''
+
         # -----------십자 X자 안전지대-----------  
         self.xplus_frame = ctk.CTkFrame(
             self.container,
             fg_color="#cfeaf8",
             width=100,
-            height=135
+            height=115
         )
         self.xplus_frame.place(x=5, y=5)
         self.xplus_label = ctk.CTkLabel(self.xplus_frame, text="")
-        self.xplus_label.place(x=12, y=25)
+        self.xplus_label.place(relx=0.5, rely=0.17, anchor="n")
         self.xplus_ref = None
 
         ctk.CTkLabel(
             self.xplus_frame,
             text="첫 기믹 체크",
             font=ctk.CTkFont(size=15)
-        ).place(x=7, y=3)
+        ).place(relx=0.5, rely=0, anchor="n")
 
         self.xplus_strat_label = ctk.CTkLabel(
             self.xplus_frame,
             text="",
             font=ctk.CTkFont(size=15),
         )
-        self.xplus_strat_label.place(relx=0.49, rely=0.95, anchor="s")
+        self.xplus_strat_label.place(relx=0.49, rely=0.98, anchor="s")
 
         # -----------심상세계 위아래 안전지대-----------
         self.simsang_frame = ctk.CTkFrame(
@@ -128,7 +128,8 @@ class WindowB(ctk.CTkToplevel):
             width=100,
             height=100
         )
-        self.simsang_frame.place(x=110, y=5)
+        #self.simsang_frame.place(x=110, y=5)
+        self.simsang_frame.place(x=5, y=124)
         self.simsang_label = ctk.CTkLabel(self.simsang_frame, text="")
         self.simsang_label.place(x=12, y=25)
         self.simsang_ref = None
@@ -137,16 +138,16 @@ class WindowB(ctk.CTkToplevel):
             self.simsang_frame,
             text="첫 안전지대",
             font=ctk.CTkFont(size=15)
-        ).place(x=7, y=3)       
-
+        ).place(relx=0.5, rely=0, anchor="n")       
+        
         # -----------교대 여부-----------
         self.swap_frame = ctk.CTkFrame(
             self.container,
             fg_color="#cfeaf8",
-            width=100,
+            width=200,
             height=30
         )
-        self.swap_frame.place(x=110, y=110)
+        self.swap_frame.place(x=5, y=228)
         
         self.swap_label = ctk.CTkLabel(
             self.swap_frame,
@@ -155,25 +156,26 @@ class WindowB(ctk.CTkToplevel):
         )
         self.swap_label.place(relx=0.5, rely=0.5, anchor="center")
         
+        
         # -----------분신 섬, 안전지대 확인-----------
         self.safe_isl_frame = ctk.CTkFrame(
             self.container,
             fg_color="#cfeaf8",
-            width=160,
+            width=130,
             height=93
         )
-        self.safe_isl_frame.place(x=5, y=254)
+        self.safe_isl_frame.place(x=5, y=262)
         self.safe_isl_label = ctk.CTkLabel(self.safe_isl_frame, text="")
-        self.safe_isl_label.place(x=10, y=30)
+        self.safe_isl_label.place(x=5, y=30)
         self.safe_isl_ref = None
 
         self.safe_spot_label = ctk.CTkLabel(self.safe_isl_frame, text="")
-        self.safe_spot_label.place(x=80, y=28)
+        self.safe_spot_label.place(x=60, y=28)
         self.safe_spot_ref = None
 
         ctk.CTkLabel(
             self.safe_isl_frame,
-            text="이동할 섬 및 안전지대",
+            text="이동할 섬",
             font=ctk.CTkFont(size=15)
         ).place(x=5, y=3)
         
@@ -181,27 +183,28 @@ class WindowB(ctk.CTkToplevel):
         self.check_frame = ctk.CTkFrame(
             self.container,
             fg_color="#cfeaf8",
-            width=65,
-            height=105
+            width=75,
+            height=100
         )
-        self.check_frame.place(x=5, y=145)
+        #self.check_frame.place(x=5, y=145)
+        self.check_frame.place(x=110, y=5)
         self.check_label = ctk.CTkLabel(self.check_frame, text="")
-        self.check_label.place(x=5, y=40)
+        self.check_label.place(relx=0.5, rely=0.3, anchor="n")
         self.check_img_ref = None
         
         ctk.CTkLabel(
             self.check_frame,
             text="표식",
             font=ctk.CTkFont(size=15)
-        ).place(relx=0.5, rely=0.03, anchor="n")
+        ).place(relx=0.5, rely=0, anchor="n")
 
         self.spread_frame = ctk.CTkFrame(
             self.container,
             fg_color="#cfeaf8",
-            width=240,
-            height=105
+            width=256,
+            height=115
         )
-        self.spread_frame.place(x=145, y=145)
+        self.spread_frame.place(x=110, y=110)
 
         self.marker_frame = ctk.CTkFrame(
             self.spread_frame,
@@ -216,12 +219,12 @@ class WindowB(ctk.CTkToplevel):
         self.marker_refs = [None, None, None, None]
         for i in range(4):
             cell = ctk.CTkFrame(self.marker_frame, fg_color="transparent")
-            cell.pack(side="left", padx=3.5, pady=0)
+            cell.pack(side="left", padx=5.5, pady=0)
 
             img_lbl = ctk.CTkLabel(cell, text="")
             img_lbl.pack(pady=(0, 0))
 
-            txt_lbl = ctk.CTkLabel(cell, text="", font=ctk.CTkFont(size=13))
+            txt_lbl = ctk.CTkLabel(cell, text="", font=ctk.CTkFont(size=14))
             txt_lbl.pack(pady=(0, 0))
 
             self.marker_labels.append(img_lbl)
@@ -231,49 +234,71 @@ class WindowB(ctk.CTkToplevel):
             self.spread_frame,
             text="산개,쉐어 동선",
             font=ctk.CTkFont(size=15)
-        ).place(x=5, y=3)
+        ).place(x=5, y=0)
         
         self.where_center = ctk.CTkLabel(
             self.spread_frame,
             text="/ center: 1, 2징 사이",
             font=ctk.CTkFont(size=14)
         )
-        self.where_center.place(x=106, y=3)
+        self.where_center.place(x=106, y=0)
 
         # -----------선 채가기-----------
         self.line_frame = ctk.CTkFrame(
             self.container,
             fg_color="#cfeaf8",
-            width=65,
-            height=105
+            width=98,
+            height=100
         )
-        self.line_frame.place(x=75, y=145)
+        self.line_frame.place(x=268, y=5)
 
-        self.line_img_label = ctk.CTkLabel(self.line_frame, text="")
-        self.line_img_label.place(x=8, y=28)
-
+        self.line_img1_label = ctk.CTkLabel(self.line_frame, text="")
+        self.line_img1_label.place(x=0, y=30)
+        '''
         self.line_text_label = ctk.CTkLabel(
             self.line_frame,
             text="",
             font=ctk.CTkFont(size=15)
         )
         self.line_text_label.place(relx=0.5, rely=0.85, anchor="center")
+        '''
         self.line_img_ref = None
+
+        self.line_img2_label = ctk.CTkLabel(self.line_frame, text="")
+        self.line_img2_label.place(x=50, y=30)
+        self.line_img2_ref = None
 
         ctk.CTkLabel(
             self.line_frame,
-            text="선 방향",
+            text="선 위치",
             font=ctk.CTkFont(size=15)
-        ).place(relx=0.5, rely=0.03, anchor="n")
+        ).place(relx=0.5, rely=0, anchor="n")
 
+        # -----------선 종류----------- 
+        self.line_spreadstack_frame = ctk.CTkFrame(
+            self.container,
+            fg_color="#cfeaf8",
+            width=75,
+            height=100
+        )
+        self.line_spreadstack_frame.place(x=189, y=5)
+        self.line_spreadstack_label = ctk.CTkLabel(self.line_spreadstack_frame, text="")
+        self.line_spreadstack_label.place(relx=0.5, rely=0.3, anchor="n")
+        self.line_spreadstack_img_ref = None
+
+        ctk.CTkLabel(
+            self.line_spreadstack_frame,
+            text="선 종류",
+            font=ctk.CTkFont(size=15)
+        ).place(relx=0.5, rely=0, anchor="n")
         # -----------타워 요약-----------           
         self.tower_check_frame = ctk.CTkFrame(
             self.container,
-            width=215,
+            width=226,
             height=92,
             fg_color="#cfeaf8"
         )
-        self.tower_check_frame.place(x=170, y=254)
+        self.tower_check_frame.place(x=140, y=262)
 
         self.tower_aero_label =  ctk.CTkLabel(
             self.tower_check_frame,
@@ -354,6 +379,21 @@ class WindowB(ctk.CTkToplevel):
         self.check_label.configure(image=display_img, text="")
         self.update_idletasks()
 
+    def set_line_spreadstacek_image(self, mode_img: ctk.CTkImage | None):
+        self.line_spreadstack_img_ref = mode_img
+        display_mode = mode_img if mode_img is not None else self._blank_img
+        self.line_spreadstack_label.configure(image=display_mode, text="")
+        self.update_idletasks()     
+
+    def set_line_marks(self, img1: ctk.CTkImage | None, img2: ctk.CTkImage | None):
+        self.line_img1_ref = img1
+        self.line_img2_ref = img2
+        d1 = img1 if img1 is not None else self._blank_img
+        d2 = img2 if img2 is not None else self._blank_img
+        self.line_img1_label.configure(image=d1, text="")
+        self.line_img2_label.configure(image=d2, text="")
+        self.update_idletasks() 
+
     def set_4_icons(self, icons: list[ctk.CTkImage | None], texts: list[str]):
         padded_icons = (icons + [None, None, None, None])[:4]
         padded_texts = (texts + ["", "", "", ""])[:4]
@@ -370,7 +410,8 @@ class WindowB(ctk.CTkToplevel):
         self.update_idletasks()
 
     def set_shift_status(self, enabled: bool):
-        self.swap_label.configure(text="교대(O)" if enabled else "교대 없음(X)")
+        self.swap_label.configure(text="타워 교대하기" if enabled else "교대 없음(X)")
+        self.swap_frame.configure(fg_color="#e19c6e" if enabled else "#cfeaf8")
 
     def _reapply_window_styles(self, event=None):
         if not self._click_through_enabled:
@@ -496,14 +537,7 @@ class WindowB(ctk.CTkToplevel):
         SWP_FRAMECHANGED = 0x0020
         user32.SetWindowPos(hwnd, None, 0, 0, 0, 0,
                             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED)
-
-    def set_line_mark(self, img: ctk.CTkImage | None, text: str):
-        self.line_img_ref = img
-        display_img = img if img is not None else self._blank_img
-        self.line_img_label.configure(image=display_img, text="")
-        self.line_text_label.configure(text=text)
-        self.update_idletasks()       
-    
+   
     def set_move_locked(self, locked: bool):
         self._move_locked = locked
 
@@ -527,7 +561,8 @@ class WindowB(ctk.CTkToplevel):
         dx = event.x_root - self._drag_x
         dy = event.y_root - self._drag_y
         self.geometry(f"+{self._win_x + dx}+{self._win_y + dy}")
-
+        
+    '''
     def append_line(self, text: str):
         tb = self.log_box
         tb.configure(state="normal")
@@ -540,12 +575,13 @@ class WindowB(ctk.CTkToplevel):
 
         tb.see("end")
         tb.configure(state="disabled")
-
+    
     def clear(self):
         tb = self.log_box
         tb.configure(state="normal")
         tb.delete("1.0", "end")
         tb.configure(state="disabled")
+    '''
 
 # Window A
 class App(ctk.CTk):
@@ -577,16 +613,18 @@ class App(ctk.CTk):
             "Cmark": ctk.CTkImage(Image.open(resource_path("img/Cmark.png")), size=(50, 50)),
             "Dmark": ctk.CTkImage(Image.open(resource_path("img/Dmark.png")), size=(50, 50)),
             "stack": ctk.CTkImage(Image.open(resource_path("img/stack.png")), size=(50, 50)),
+            "stack_up": ctk.CTkImage(Image.open(resource_path("img/stack.png")), size=(60, 60)),
             "spread": ctk.CTkImage(Image.open(resource_path("img/spread.png")), size=(50, 50)),
+            "spread_up": ctk.CTkImage(Image.open(resource_path("img/spread.png")), size=(60, 60)),
             "center": ctk.CTkImage(Image.open(resource_path("img/centermark.png")), size=(50, 50)),
-            "first": ctk.CTkImage(Image.open(resource_path("img/first.png")), size=(50, 50)),
-            "second": ctk.CTkImage(Image.open(resource_path("img/second.png")), size=(50, 50)),
-            "third": ctk.CTkImage(Image.open(resource_path("img/third.png")), size=(50, 50)),
-            "fourth": ctk.CTkImage(Image.open(resource_path("img/fourth.png")), size=(50, 50)),
-            "stop1": ctk.CTkImage(Image.open(resource_path("img/stop1.png")), size=(50, 50)),
-            "stop2": ctk.CTkImage(Image.open(resource_path("img/stop2.png")), size=(50, 50)),
-            "bind1": ctk.CTkImage(Image.open(resource_path("img/bind1.png")), size=(50, 50)),
-            "bind2": ctk.CTkImage(Image.open(resource_path("img/bind2.png")), size=(50, 50)),
+            "first": ctk.CTkImage(Image.open(resource_path("img/first.png")), size=(60, 60)),
+            "second": ctk.CTkImage(Image.open(resource_path("img/second.png")), size=(60, 60)),
+            "third": ctk.CTkImage(Image.open(resource_path("img/third.png")), size=(60, 60)),
+            "fourth": ctk.CTkImage(Image.open(resource_path("img/fourth.png")), size=(60, 60)),
+            "stop1": ctk.CTkImage(Image.open(resource_path("img/stop1.png")), size=(60, 60)),
+            "stop2": ctk.CTkImage(Image.open(resource_path("img/stop2.png")), size=(60, 60)),
+            "bind1": ctk.CTkImage(Image.open(resource_path("img/bind1.png")), size=(60, 60)),
+            "bind2": ctk.CTkImage(Image.open(resource_path("img/bind2.png")), size=(60, 60)),
         }
 
         self.display_map = {
@@ -693,11 +731,20 @@ class App(ctk.CTk):
         self.apply_strategy_to_ui()
         
     def apply_3to10_visual(self, n: int):
-        mark_key = self.strategy.btn_to_mark.get(n)
-        mark_img = self.button_icons.get(mark_key) if mark_key else None
-
-        mode_text = "쉐어" if self.strategy.is_share(n) else "산개"
-        self.win_b.set_line_mark(mark_img, mode_text)
+        pair = self.strategy.btn_to_line_marks.get(n)  # (mark1_key, mark2_key)
+        if pair:
+            k1, k2 = pair
+            img1 = self.button_icons.get(k1)
+            img2 = self.button_icons.get(k2)
+        else:
+            img1 = None
+            img2 = None
+        is_share = self.strategy.is_share(n)
+        mode_img = self.button_icons["stack_up"] if is_share else self.button_icons["spread_up"]
+        #mode_text = "쉐어" if self.strategy.is_share(n) else "산개"
+        #mode_key = "stack_up" if self.strategy.is_share(n) else "spread_up"
+        self.win_b.set_line_spreadstacek_image(mode_img)
+        self.win_b.set_line_marks(img1, img2)
 
         check_img_key = self.strategy.check_img_key_map.get(n)
         img = self.button_icons.get(check_img_key) if check_img_key else None
@@ -1113,7 +1160,7 @@ class App(ctk.CTk):
 
         swap_button = ctk.CTkButton(
             self,
-            text="교대?",
+            text="타워 교대?",
             text_color="black",
             font=ctk.CTkFont(size=18),
             command=lambda: self.handle_button(15),
@@ -1275,9 +1322,10 @@ class App(ctk.CTk):
         if hasattr(self, "win_b") and self.win_b.winfo_exists():
             self.win_b.after(0, self.win_b.ensure_on_top)
             self.win_b.after(50, self.apply_b_controls)
-            
+    '''        
     def append_fix(self):
         self.win_b.append_line("----------(수정)----------")
+    '''
 
     def apply_3to10_button_icons_by_strats(self):
         mapping = self.strategy.btn_icon_map
@@ -1299,8 +1347,8 @@ class App(ctk.CTk):
         last = getattr(self, last_attr)
 
         if last == other_n:
-            if fix_on_switch:
-                self.win_b.append_line("----------(수정)----------")
+            #if fix_on_switch:
+                #self.win_b.append_line("----------(수정)----------")
             self.enable_btn(other_n)
 
         self.disable_btn(new_n)
@@ -1311,7 +1359,7 @@ class App(ctk.CTk):
             if n in (21, 22):
                 continue
             self.enable_btn(n)
-        self.win_b.clear()
+        #self.win_b.clear()
         self.win_b.set_4_icons([None, None, None, None], ["", "", "", ""])
         self.win_b.set_check_image(None)
         self.win_b.set_xplus_image(None)
@@ -1319,7 +1367,9 @@ class App(ctk.CTk):
         self.win_b.set_simsang_image(None)
         self.win_b.set_shift_status(False)
         self.win_b.set_safe_spot_image(None)
-        self.win_b.set_line_mark(None, "")       
+        #self.win_b.set_line1_mark(None)
+        self.win_b.set_line_marks(None, None)
+        self.win_b.set_line_spreadstacek_image(None)       
         self.last_icon = None
         self.last_btn_3_10 = None
         self.last_updown = None
@@ -1335,10 +1385,10 @@ class App(ctk.CTk):
         if self.isSpread in (1, 2):
             result = self.get_spread_result(self.last_btn_3_10, self.isSpread)
             if result is not None:
-                self.win_b.append_line(result)
+                #self.win_b.append_line(result)
                 self.apply_spread_visual(result)
-            else:
-                self.win_b.append_line("(!)표식 선택 필요.")
+            #else:
+                #self.win_b.append_line("(!)표식 선택 필요.")
     
     def get_3to10_label(self, n: int) -> str:
         return self.strategy.text_3_10.get(n, f"버튼 {n}")
@@ -1393,10 +1443,10 @@ class App(ctk.CTk):
 
         # 버튼마다 다른 텍스트 출력
     def handle_3_to_10(self, n: int):
-        self.win_b.append_line(self.get_3to10_label(n))
+        #self.win_b.append_line(self.get_3to10_label(n))
 
         if self.last_btn_3_10 is not None and self.last_btn_3_10 != n:
-            self.win_b.append_line("----------(수정)----------")
+            #self.win_b.append_line("----------(수정)----------")
             self.enable_btn(self.last_btn_3_10)
 
         self.disable_btn(n)
@@ -1407,7 +1457,7 @@ class App(ctk.CTk):
         if self.isSpread in (1, 2):
             result = self.get_spread_result(self.last_btn_3_10, self.isSpread)
             if result:
-                self.win_b.append_line(result)
+                #self.win_b.append_line(result)
                 self.apply_spread_visual(result)
 
     def update_safe_spot_image_by_state(self):
@@ -1433,7 +1483,7 @@ class App(ctk.CTk):
                 last_attr="last_icon",
                 other_n=2
             )
-            self.win_b.append_line("십자")
+            #self.win_b.append_line("십자")
             self.win_b.set_xplus_image(self.display_map.get(1))
             self.update_xplus_strat_label()
 
@@ -1443,7 +1493,7 @@ class App(ctk.CTk):
                 last_attr="last_icon",
                 other_n=1
             )
-            self.win_b.append_line("X자")
+            #self.win_b.append_line("X자")
             self.win_b.set_xplus_image(self.display_map.get(2))
             self.update_xplus_strat_label()
 
@@ -1456,7 +1506,7 @@ class App(ctk.CTk):
                 last_attr="last_updown",
                 other_n=12
             )
-            self.win_b.append_line("위쪽 안전")
+            #self.win_b.append_line("위쪽 안전")
             self.win_b.set_simsang_image(self.display_map.get(3))
             self.update_safe_spot_image_by_state()
 
@@ -1466,7 +1516,7 @@ class App(ctk.CTk):
                 last_attr="last_updown",
                 other_n=11
             )
-            self.win_b.append_line("아래쪽 안전")
+            #self.win_b.append_line("아래쪽 안전")
             self.win_b.set_simsang_image(self.display_map.get(4))
             self.update_safe_spot_image_by_state()
 
@@ -1476,7 +1526,7 @@ class App(ctk.CTk):
                 last_attr="last_spreadstack",
                 other_n=14
             )
-            self.win_b.append_line("산개")
+            #self.win_b.append_line("산개")
             self.set_is_spread(1)
 
         elif n == 14:
@@ -1485,13 +1535,13 @@ class App(ctk.CTk):
                 last_attr="last_spreadstack",
                 other_n=13
             )
-            self.win_b.append_line("쉐어")
+            #self.win_b.append_line("쉐어")
             self.set_is_spread(2)
 
         elif n == 15:
             self.toggle_15_on = not self.toggle_15_on
             self.win_b.set_shift_status(self.toggle_15_on)
-            self.win_b.append_line("교대" if self.toggle_15_on else "교대 해제")
+            #self.win_b.append_line("교대" if self.toggle_15_on else "교대 해제")
 
         elif n == 16:
             self.handle_exclusive_pair(
@@ -1499,7 +1549,7 @@ class App(ctk.CTk):
                 last_attr="last_clone",
                 other_n=17,
             )
-            self.win_b.append_line("A 남음")
+            #self.win_b.append_line("A 남음")
             self.update_safe_spot_image_by_state()
 
         elif n == 17:
@@ -1508,7 +1558,7 @@ class App(ctk.CTk):
                 last_attr="last_clone",
                 other_n=16,
             )
-            self.win_b.append_line("C 남음")
+            #self.win_b.append_line("C 남음")
             self.update_safe_spot_image_by_state()
 
         elif n == 18:
@@ -1517,7 +1567,7 @@ class App(ctk.CTk):
                 last_attr="last_move",
                 other_n=19
             )
-            self.win_b.append_line("오른쪽 이동")
+            #self.win_b.append_line("오른쪽 이동")
             self.win_b.set_safe_isl_image(self.button_icons["Bmark"])
 
         elif n == 19:
@@ -1526,7 +1576,7 @@ class App(ctk.CTk):
                 last_attr="last_move",
                 other_n=18
             )
-            self.win_b.append_line("왼쪽 이동")
+            #self.win_b.append_line("왼쪽 이동")
             self.win_b.set_safe_isl_image(self.button_icons["Dmark"])
 
         elif n == 20:
@@ -1538,7 +1588,7 @@ class App(ctk.CTk):
                 last_attr="last_main",
                 other_n=22,
             )
-            self.win_b.append_line("메인조 변경")
+            #self.win_b.append_line("메인조 변경")
             self.update_xplus_strat_label()
 
         elif n == 22:
@@ -1547,11 +1597,11 @@ class App(ctk.CTk):
                 last_attr="last_main",
                 other_n=21,
             )
-            self.win_b.append_line("서브조 변경")
+            #self.win_b.append_line("서브조 변경")
             self.update_xplus_strat_label()
 
-        else:
-            self.win_b.append_line(f"{n}번 버튼 눌림")
+        #else:
+            #self.win_b.append_line(f"{n}번 버튼 눌림")
 
 if __name__ == "__main__":
     app = App()

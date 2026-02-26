@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 @dataclass(frozen=True)
 class Strategy:
@@ -11,6 +11,7 @@ class Strategy:
 
     text_3_10: Dict[int, str]         # 버튼 3~10 로그 텍스트
     btn_to_mark: Dict[int, str]       # 3~10 -> "Amark" 같은 마크 이미지 키
+    btn_to_line_marks: Dict[int, Tuple[str, str]]
     check_img_key_map: Dict[int, str] # 3~10 -> "first" 같은 체크 이미지 키
     btn_icon_map: Dict[int, str]      # 바닥징
 
@@ -46,6 +47,16 @@ STRATEGIES: Dict[str, Strategy] = {
             4: "Bmark", 8: "Bmark",
             5: "Cmark", 9: "Cmark",
             6: "Dmark", 10:"Dmark",
+        },
+        btn_to_line_marks={
+            3: ("Amark", "1mark"),
+            4: ("Bmark", "2mark"),
+            5: ("Cmark", "3mark"),
+            6: ("Dmark", "4mark"),
+            7: ("Amark", "1mark"),
+            8: ("Bmark", "2mark"),
+            9: ("Cmark", "3mark"),
+            10: ("Dmark", "4mark"),
         },
         check_img_key_map={
             3:"first", 4:"third", 5:"second", 6:"fourth",
@@ -103,6 +114,16 @@ STRATEGIES: Dict[str, Strategy] = {
             4:"Amark", 8:"Cmark",
             5:"Dmark", 9:"Dmark",
             6:"Bmark", 10:"Bmark",
+        },
+        btn_to_line_marks={
+            3: ("Amark", "2mark"),
+            4: ("Amark", "2mark"),
+            5: ("Dmark", "1mark"),
+            6: ("Bmark", "3mark"),
+            7: ("Cmark", "4mark"),
+            8: ("Cmark", "4mark"),
+            9: ("Dmark", "1mark"),
+            10: ("Bmark", "3mark"),
         },
         check_img_key_map={
             3:"fourth", 4:"first", 5:"stop2", 6:"second",
