@@ -28,7 +28,7 @@ class WindowB(ctk.CTkToplevel):
 
         # X 버튼 막기 (닫히지 않게)
         self.protocol("WM_DELETE_WINDOW", lambda: None)
-        self.overrideredirect(True)
+        #self.overrideredirect(True)
 
         # 드래그 이동 구현
         self.bind("<ButtonPress-1>", self.start_move)
@@ -44,6 +44,11 @@ class WindowB(ctk.CTkToplevel):
         self._blank_img = ctk.CTkImage(Image.new("RGBA", (1, 1), (0, 0, 0, 0)), size=(1, 1))      
 
         self.reapply = None
+        self.alpha = 1.0
+        try:
+            self.attributes("-alpha", self.alpha)
+        except Exception:
+            pass
 
         self.check_strat_frame = ctk.CTkFrame(
             self,
@@ -68,33 +73,6 @@ class WindowB(ctk.CTkToplevel):
             height=358
             )
         self.container.place(x=5, y=45)
-
-        '''
-        # -----------로그-----------
-        self.log_frame = ctk.CTkFrame(
-            self.container,
-            fg_color="#cfeaf8",
-            width=170,
-            height=135
-        )
-        self.log_frame.place(x=215, y=5)
-
-        ctk.CTkLabel(
-            self.log_frame,
-            text="클릭 로그",
-            font=ctk.CTkFont(size=15)
-        ).place(x=7, y=3)
-
-        self.log_box= ctk.CTkTextbox(
-            self.log_frame,
-            fg_color="#f0fbff",
-            width=160,
-            height=95
-        )
-        self.log_box.place(x=5, y=35)
-        self.log_box.configure(state="disabled")
-
-        '''
 
         # -----------십자 X자 안전지대-----------  
         self.xplus_frame = ctk.CTkFrame(
@@ -144,10 +122,10 @@ class WindowB(ctk.CTkToplevel):
         self.swap_frame = ctk.CTkFrame(
             self.container,
             fg_color="#cfeaf8",
-            width=200,
+            width=226,
             height=30
         )
-        self.swap_frame.place(x=5, y=228)
+        self.swap_frame.place(x=140, y=228)
         
         self.swap_label = ctk.CTkLabel(
             self.swap_frame,
@@ -162,9 +140,9 @@ class WindowB(ctk.CTkToplevel):
             self.container,
             fg_color="#cfeaf8",
             width=130,
-            height=93
+            height=126
         )
-        self.safe_isl_frame.place(x=5, y=262)
+        self.safe_isl_frame.place(x=5, y=228)
         self.safe_isl_label = ctk.CTkLabel(self.safe_isl_frame, text="")
         self.safe_isl_label.place(x=5, y=30)
         self.safe_isl_ref = None
@@ -177,7 +155,14 @@ class WindowB(ctk.CTkToplevel):
             self.safe_isl_frame,
             text="이동할 섬",
             font=ctk.CTkFont(size=15)
-        ).place(x=5, y=3)
+        ).place(relx=0.5, rely=0, anchor="n")
+
+        self.is_hitbox_label = ctk.CTkLabel(
+            self.safe_isl_frame,
+            text="",
+            font=ctk.CTkFont(size=15)
+        )
+        self.is_hitbox_label.place(relx=0.5, rely=0.95, anchor="s")
         
         # -----------머리 위 표식에 따른 이동동선-----------
         self.check_frame = ctk.CTkFrame(
@@ -254,14 +239,6 @@ class WindowB(ctk.CTkToplevel):
 
         self.line_img1_label = ctk.CTkLabel(self.line_frame, text="")
         self.line_img1_label.place(x=0, y=30)
-        '''
-        self.line_text_label = ctk.CTkLabel(
-            self.line_frame,
-            text="",
-            font=ctk.CTkFont(size=15)
-        )
-        self.line_text_label.place(relx=0.5, rely=0.85, anchor="center")
-        '''
         self.line_img_ref = None
 
         self.line_img2_label = ctk.CTkLabel(self.line_frame, text="")
@@ -319,14 +296,16 @@ class WindowB(ctk.CTkToplevel):
         self.tower_nodebuff_range_label =  ctk.CTkLabel(
             self.tower_check_frame,
             text="디버프X 원딜: 섬 남쪽(6시) 끝",
-            font=ctk.CTkFont(size=13)
+            font=ctk.CTkFont(size=13),
+            text_color="#000000"
         )
         self.tower_nodebuff_range_label.place(x=5, y=43)
 
         self.tower_nodebuff_melee_label =  ctk.CTkLabel(
             self.tower_check_frame,
             text="디버프X 근딜: 죽선 대상자 뒤쪽 붙기",
-            font=ctk.CTkFont(size=13)
+            font=ctk.CTkFont(size=13),
+            text_color="#000000"
         )
         self.tower_nodebuff_melee_label.place(x=5, y=63)
 
@@ -347,6 +326,9 @@ class WindowB(ctk.CTkToplevel):
 
     def set_check_strat_text(self, text: str):
         self.check_strat_txt.configure(text=text)
+
+    def set_is_hitbox_text(self, text: str):
+        self.is_hitbox_label.configure(text=text)
 
     def set_tower_check_texts(self, texts: list[str]):
             padded = (texts + ["", "", "", ""])[:4]
@@ -546,6 +528,15 @@ class WindowB(ctk.CTkToplevel):
         self.attributes("-topmost", True)
         self.lift()
         self.after(10, lambda: self.attributes("-topmost", True))
+
+    # 투명도
+    def set_opacity(self, alpha: float):
+        a = max(0.4, min(1.0, float(alpha)))
+        try:
+            self.attributes("-alpha", a)
+        except Exception:
+            # 일부 환경에서는 -alpha 지원이 제한될 수 있음
+            pass
     
     def start_move(self, event):
         if getattr(self, "_move_locked", False):
@@ -561,27 +552,6 @@ class WindowB(ctk.CTkToplevel):
         dx = event.x_root - self._drag_x
         dy = event.y_root - self._drag_y
         self.geometry(f"+{self._win_x + dx}+{self._win_y + dy}")
-        
-    '''
-    def append_line(self, text: str):
-        tb = self.log_box
-        tb.configure(state="normal")
-
-        current = tb.get("1.0", "end-1c")
-        if current.strip() == "":
-            tb.insert("end", text)
-        else:
-            tb.insert("end", "\n" + text)
-
-        tb.see("end")
-        tb.configure(state="disabled")
-    
-    def clear(self):
-        tb = self.log_box
-        tb.configure(state="normal")
-        tb.delete("1.0", "end")
-        tb.configure(state="disabled")
-    '''
 
 # Window A
 class App(ctk.CTk):
@@ -647,15 +617,16 @@ class App(ctk.CTk):
         }
         
         self.safe_spot_img_map = {
-            "rl": ctk.CTkImage(Image.open(resource_path("img/rlsafe.png")), size=(60, 60)),
-            "ud": ctk.CTkImage(Image.open(resource_path("img/udsafe.png")), size=(60, 60)),
+            "rl": ctk.CTkImage(Image.open(resource_path("img/rlsafe.png")), size=(65, 65)),
+            "ud": ctk.CTkImage(Image.open(resource_path("img/udsafe.png")), size=(65, 65)),
         }
 
         self.strategy: Strategy = STRATEGIES["09stop"]
 
         # B창 생성
         self.win_b = WindowB(self)
-        self.win_b.transient(self)  # A에 종속
+        #self.win_b.withdraw()
+        #self.win_b.transient(self)
 
         # A 닫으면 B도 같이 닫기
         self.protocol("WM_DELETE_WINDOW", self.on_close_a)
@@ -677,18 +648,18 @@ class App(ctk.CTk):
 
         self.isSpread = 0
 
-        click_control_frame = ctk.CTkFrame(
+        self.click_control_frame = ctk.CTkFrame(
             self,
             width=160,
-            height=80,
+            height=103,
             fg_color="#cfeaf8"
         )
-        click_control_frame.place(x=180, y=467)
+        self.click_control_frame.place(x=180, y=467)
 
         self.lock_move = ctk.BooleanVar(value=False)
         self.ignore_click = ctk.BooleanVar(value=False)
         self.cb_lock_move = ctk.CTkCheckBox(
-            click_control_frame,
+            self.click_control_frame,
             text="위치 잠금",
             variable=self.lock_move,
             command=self.apply_b_controls,
@@ -698,10 +669,10 @@ class App(ctk.CTk):
             hover=False,
             border_width=3
         )
-        self.cb_lock_move.place(x=10, y=10)
+        self.cb_lock_move.place(x=10, y=5)
 
-        cb_ignore_click = ctk.CTkCheckBox(
-            click_control_frame,
+        self.cb_ignore_click = ctk.CTkCheckBox(
+            self.click_control_frame,
             text="클릭 무시",
             variable=self.ignore_click,
             command=self.apply_b_controls,
@@ -711,18 +682,51 @@ class App(ctk.CTk):
             hover=False,
             border_width=3
         )
-        cb_ignore_click.place(x=10, y=45)
+        self.cb_ignore_click.place(x=10, y=33)
+
+        ctk.CTkLabel(
+            self.click_control_frame,
+            text="투명도",
+            font=ctk.CTkFont(size=14),
+            text_color="#000000"
+        ).place(x=10, y=58)
+
+        self.set_opacity = ctk.CTkSlider(
+            self.click_control_frame,
+            from_=0.4,
+            to=1.0,
+            number_of_steps=80,
+            command=lambda v: self.win_b.set_opacity(v),
+            width=145
+        )
+        self.set_opacity.set(1.0)
+        self.set_opacity.place(relx=0.5, rely=0.86, anchor="center")
 
         self._build_ui()
-        self.win_b.update_idletasks()
-        self.win_b.deiconify()
-        self.win_b.lift()
 
+        def set_window_b():
+            try:
+                self.win_b.overrideredirect(True)  # 여기서 적용
+                self.win_b.update_idletasks()
+                self.win_b.deiconify()
+                self.win_b.lift()
+                self.win_b.attributes("-topmost", True)
+            except Exception:
+                pass
+
+        self.after_idle(set_window_b)
+        
     def apply_b_controls(self):
         if self.ignore_click.get():
             self.lock_move.set(True)  # 클릭 무시 중엔 이동도 잠그기
         self.win_b.set_move_locked(self.lock_move.get())
         self.win_b.set_click_through(self.ignore_click.get())
+
+    def set_app_topmost(self, enabled: bool):
+        try:
+            self.attributes("-topmost", bool(enabled))
+        except Exception:
+            pass
 
     def on_strats_changed(self, value: str):
         self.reset_all()
@@ -741,8 +745,6 @@ class App(ctk.CTk):
             img2 = None
         is_share = self.strategy.is_share(n)
         mode_img = self.button_icons["stack_up"] if is_share else self.button_icons["spread_up"]
-        #mode_text = "쉐어" if self.strategy.is_share(n) else "산개"
-        #mode_key = "stack_up" if self.strategy.is_share(n) else "spread_up"
         self.win_b.set_line_spreadstacek_image(mode_img)
         self.win_b.set_line_marks(img1, img2)
 
@@ -826,8 +828,23 @@ class App(ctk.CTk):
             text_color="#6eb6e1"
         ).place(x=220, y=707)      
 
-        # ---------------------- 처리법 선택 ------------------------
+        # ---------------------- App창 맨 위 고정 ------------------------
+        self.app_topmost_var = ctk.BooleanVar(value=False)
 
+        self.app_topmost_checkbox = ctk.CTkCheckBox(
+            title_frame,
+            text="맨 위 고정",
+            variable=self.app_topmost_var,
+            command=lambda: self.set_app_topmost(self.app_topmost_var.get()),
+            checkbox_width=20,
+            checkbox_height=20,
+            border_color="#759bb3",
+            hover=False,
+            border_width=3,
+        )
+        self.app_topmost_checkbox.place(x=230, y=10)
+
+        # ---------------------- 처리법 선택 ------------------------
         strats_frame = ctk.CTkFrame(
             self,
             width=160,
@@ -854,8 +871,7 @@ class App(ctk.CTk):
             font=ctk.CTkFont(size=15)
         ).place(x=8, y=5)
 
-        # -----------메인 or 서브 조-----------
-        
+        # -----------메인 or 서브 조-----------       
         main_button = ctk.CTkButton(
             self,
             text="메인조",
@@ -1168,10 +1184,10 @@ class App(ctk.CTk):
             hover_color="#6eb6e1",
             border_width=3,
             border_color="#759bb3",
-            width=95, 
+            width=92, 
             height=45
         )
-        swap_button.place(x=245, y=410)
+        swap_button.place(x=243, y=410)
         self.buttons[15] = swap_button
 
         line_frame = ctk.CTkFrame(
@@ -1225,7 +1241,6 @@ class App(ctk.CTk):
         )
         CLeft.place(x=80, y=35)
         self.buttons[17] = CLeft
-
 
         where_frame = ctk.CTkFrame(
             self,
@@ -1290,8 +1305,7 @@ class App(ctk.CTk):
         self.enable_btn(22)
         self.last_main = 21
         self.apply_strategy_to_ui()
-
-    
+  
     def on_close_a(self):
         try:
             if self.win_b.winfo_exists():
@@ -1359,7 +1373,6 @@ class App(ctk.CTk):
             if n in (21, 22):
                 continue
             self.enable_btn(n)
-        #self.win_b.clear()
         self.win_b.set_4_icons([None, None, None, None], ["", "", "", ""])
         self.win_b.set_check_image(None)
         self.win_b.set_xplus_image(None)
@@ -1367,9 +1380,8 @@ class App(ctk.CTk):
         self.win_b.set_simsang_image(None)
         self.win_b.set_shift_status(False)
         self.win_b.set_safe_spot_image(None)
-        #self.win_b.set_line1_mark(None)
         self.win_b.set_line_marks(None, None)
-        self.win_b.set_line_spreadstacek_image(None)       
+        self.win_b.set_line_spreadstacek_image(None) 
         self.last_icon = None
         self.last_btn_3_10 = None
         self.last_updown = None
@@ -1379,6 +1391,7 @@ class App(ctk.CTk):
         self.isSpread = 0
         self.toggle_15_on = False
         self.update_xplus_strat_label()
+        self.win_b.set_is_hitbox_text("")     
 
     def set_is_spread(self, value: int):
         self.isSpread = value
@@ -1466,14 +1479,18 @@ class App(ctk.CTk):
 
         if u is None or c is None:
             self.win_b.set_safe_spot_image(None)
+            self.win_b.set_is_hitbox_text("")
             return
 
         if (u == 11 and c == 16) or (u == 12 and c == 17):
             self.win_b.set_safe_spot_image(self.safe_spot_img_map["rl"])
+            self.win_b.set_is_hitbox_text("히트박스 안")
         elif (u == 11 and c == 17) or (u == 12 and c == 16):
             self.win_b.set_safe_spot_image(self.safe_spot_img_map["ud"])
+            self.win_b.set_is_hitbox_text("히트박스 바깥")
         else:
             self.win_b.set_safe_spot_image(None)
+            self.win_b.set_is_hitbox_text("")
 
     # 버튼 핸들러
     def handle_button(self, n: int):
