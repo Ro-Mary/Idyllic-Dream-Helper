@@ -43,6 +43,8 @@ class WindowB(ctk.CTkToplevel):
         self.attributes("-topmost", True)
         self._blank_img = ctk.CTkImage(Image.new("RGBA", (1, 1), (0, 0, 0, 0)), size=(1, 1))      
 
+        #self.default_font = ctk.CTkFont(family="맑은 고딕", size=15)
+        #self.apply_font_recursively(self, self.default_font)
         self.reapply = None
         self.alpha = 1.0
         try:
@@ -62,9 +64,9 @@ class WindowB(ctk.CTkToplevel):
             self.check_strat_frame,
             text="현재 처리법: 09stop",
             text_color="#000000",
-            font=ctk.CTkFont(size=20)
+            font=ctk.CTkFont(family="맑은 고딕", size=20, weight="bold")
         )
-        self.check_strat_txt.place(x=10, y=5)        
+        self.check_strat_txt.place(x=10, y=3)        
 
         self.container = ctk.CTkFrame(
             self,
@@ -89,13 +91,13 @@ class WindowB(ctk.CTkToplevel):
         ctk.CTkLabel(
             self.xplus_frame,
             text="첫 기믹 체크",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(relx=0.5, rely=0, anchor="n")
 
         self.xplus_strat_label = ctk.CTkLabel(
             self.xplus_frame,
             text="",
-            font=ctk.CTkFont(size=15),
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold"),
         )
         self.xplus_strat_label.place(relx=0.49, rely=0.98, anchor="s")
 
@@ -115,7 +117,7 @@ class WindowB(ctk.CTkToplevel):
         ctk.CTkLabel(
             self.simsang_frame,
             text="첫 안전지대",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(relx=0.5, rely=0, anchor="n")       
         
         # -----------교대 여부-----------
@@ -130,7 +132,7 @@ class WindowB(ctk.CTkToplevel):
         self.swap_label = ctk.CTkLabel(
             self.swap_frame,
             text="교대 없음(X)",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         )
         self.swap_label.place(relx=0.5, rely=0.5, anchor="center")
         
@@ -154,13 +156,13 @@ class WindowB(ctk.CTkToplevel):
         ctk.CTkLabel(
             self.safe_isl_frame,
             text="이동할 섬",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(relx=0.5, rely=0, anchor="n")
 
         self.is_hitbox_label = ctk.CTkLabel(
             self.safe_isl_frame,
             text="",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=16, weight="bold")
         )
         self.is_hitbox_label.place(relx=0.5, rely=0.95, anchor="s")
         
@@ -180,7 +182,7 @@ class WindowB(ctk.CTkToplevel):
         ctk.CTkLabel(
             self.check_frame,
             text="표식",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(relx=0.5, rely=0, anchor="n")
 
         self.spread_frame = ctk.CTkFrame(
@@ -209,7 +211,7 @@ class WindowB(ctk.CTkToplevel):
             img_lbl = ctk.CTkLabel(cell, text="")
             img_lbl.pack(pady=(0, 0))
 
-            txt_lbl = ctk.CTkLabel(cell, text="", font=ctk.CTkFont(size=14))
+            txt_lbl = ctk.CTkLabel(cell, text="", font=ctk.CTkFont(family="맑은 고딕", size=14, weight="bold"))
             txt_lbl.pack(pady=(0, 0))
 
             self.marker_labels.append(img_lbl)
@@ -218,13 +220,13 @@ class WindowB(ctk.CTkToplevel):
         ctk.CTkLabel(
             self.spread_frame,
             text="산개,쉐어 동선",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=5, y=0)
         
         self.where_center = ctk.CTkLabel(
             self.spread_frame,
             text="/ center: 1, 2징 사이",
-            font=ctk.CTkFont(size=14)
+            font=ctk.CTkFont(family="맑은 고딕", size=14, weight="bold")
         )
         self.where_center.place(x=106, y=0)
 
@@ -248,7 +250,7 @@ class WindowB(ctk.CTkToplevel):
         ctk.CTkLabel(
             self.line_frame,
             text="선 위치",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(relx=0.5, rely=0, anchor="n")
 
         # -----------선 종류----------- 
@@ -266,7 +268,7 @@ class WindowB(ctk.CTkToplevel):
         ctk.CTkLabel(
             self.line_spreadstack_frame,
             text="선 종류",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(relx=0.5, rely=0, anchor="n")
         # -----------타워 요약-----------           
         self.tower_check_frame = ctk.CTkFrame(
@@ -280,7 +282,7 @@ class WindowB(ctk.CTkToplevel):
         self.tower_aero_label =  ctk.CTkLabel(
             self.tower_check_frame,
             text="에어로가(공중): 보스정면에 딱 붙기",
-            font=ctk.CTkFont(size=13),
+            font=ctk.CTkFont(family="맑은 고딕", size=13, weight="bold"),
             text_color="#1E972F"
         )
         self.tower_aero_label.place(x=5, y=3)
@@ -288,7 +290,7 @@ class WindowB(ctk.CTkToplevel):
         self.tower_doom_label = ctk.CTkLabel(
             self.tower_check_frame,
             text="죽선(빔): 숫자징 뒤쪽 변에 서기",
-            font=ctk.CTkFont(size=13),
+            font=ctk.CTkFont(family="맑은 고딕", size=13, weight="bold"),
             text_color="#631988"
         )
         self.tower_doom_label.place(x=5, y=23)
@@ -296,7 +298,7 @@ class WindowB(ctk.CTkToplevel):
         self.tower_nodebuff_range_label =  ctk.CTkLabel(
             self.tower_check_frame,
             text="디버프X 원딜: 섬 남쪽(6시) 끝",
-            font=ctk.CTkFont(size=13),
+            font=ctk.CTkFont(family="맑은 고딕", size=13, weight="bold"),
             text_color="#000000"
         )
         self.tower_nodebuff_range_label.place(x=5, y=43)
@@ -304,7 +306,7 @@ class WindowB(ctk.CTkToplevel):
         self.tower_nodebuff_melee_label =  ctk.CTkLabel(
             self.tower_check_frame,
             text="디버프X 근딜: 죽선 대상자 뒤쪽 붙기",
-            font=ctk.CTkFont(size=13),
+            font=ctk.CTkFont(family="맑은 고딕", size=13, weight="bold"),
             text_color="#000000"
         )
         self.tower_nodebuff_melee_label.place(x=5, y=63)
@@ -317,6 +319,8 @@ class WindowB(ctk.CTkToplevel):
         ]       
         self.after(200, self._ensure_layered)
         self.after(10, lambda: self.attributes("-topmost", True))
+       
+        
 
     def set_center_strat_text(self, text: str):
         self.where_center.configure(text=text)
@@ -559,7 +563,7 @@ class App(ctk.CTk):
         super().__init__()
         self.title("Idyllic Dream Helper")
         self.geometry("350x695")
-        self.resizable(False, False)
+        #self.resizable(False, False)
         self.configure(fg_color="#f0fbff")
         self._btn_enabled: dict[int, bool] = {}
         self._btn_normal_color: dict[int, any] = {}     
@@ -667,7 +671,8 @@ class App(ctk.CTk):
             checkbox_height=20,
             border_color="#759bb3",
             hover=False,
-            border_width=3
+            border_width=3,
+            font=ctk.CTkFont(family="맑은 고딕", weight="bold"),
         )
         self.cb_lock_move.place(x=10, y=5)
 
@@ -680,14 +685,15 @@ class App(ctk.CTk):
             checkbox_height=20,
             border_color="#759bb3",
             hover=False,
-            border_width=3
+            border_width=3,
+            font=ctk.CTkFont(family="맑은 고딕", weight="bold"),
         )
         self.cb_ignore_click.place(x=10, y=33)
 
         ctk.CTkLabel(
             self.click_control_frame,
             text="투명도",
-            font=ctk.CTkFont(size=14),
+            font=ctk.CTkFont(family="맑은 고딕", size=14, weight="bold"),
             text_color="#000000"
         ).place(x=10, y=58)
 
@@ -806,13 +812,13 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             title_frame, 
             text="아르카디아의 꿈 헬퍼", 
-            font=ctk.CTkFont(size=20, weight="bold")
-        ).place(x=10, y=5)    
+            font=ctk.CTkFont(family="맑은 고딕", size=20, weight="bold")
+        ).place(x=10, y=3)    
 
         ctk.CTkLabel(
             title_frame, 
             text="Idyllic Dream Helper", 
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15)
         ).place(x=10, y=27)     
         '''
         ctk.CTkLabel(
@@ -824,7 +830,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             self, 
             text="Ro Mary@Chocobo", 
-            font=ctk.CTkFont(size=13),
+            font=ctk.CTkFont(family="맑은 고딕", size=13),
             text_color="#6eb6e1"
         ).place(x=220, y=657)      
 
@@ -841,6 +847,7 @@ class App(ctk.CTk):
             border_color="#759bb3",
             hover=False,
             border_width=3,
+            font=ctk.CTkFont(family="맑은 고딕", weight="bold"),
         )
         self.app_topmost_checkbox.place(x=230, y=16)
 
@@ -868,7 +875,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             strats_frame,
             text="처리법 선택",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=8, y=5)
 
         # -----------메인 or 서브 조-----------       
@@ -883,6 +890,7 @@ class App(ctk.CTk):
             text_color_disabled="#000000",
             width=77, 
             height=30,
+            font=ctk.CTkFont(family="맑은 고딕", weight="bold", size=14),
             command=lambda: self.handle_button(21)
         )
         main_button.place(x=180, y=142)
@@ -899,6 +907,7 @@ class App(ctk.CTk):
             text_color_disabled="#000000",
             width=77, 
             height=30,
+            font=ctk.CTkFont(family="맑은 고딕", weight="bold", size=14),
             command=lambda: self.handle_button(22)
         )
         sub_button.place(x=263, y=142)
@@ -916,7 +925,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             first_frame,
             text="십자, X자 체크",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=8, y=5)
 
         plus_button = ctk.CTkButton(
@@ -961,7 +970,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             macro_frame,
             text="분신 확인하기",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=8, y=5)        
 
         _Amark = ctk.CTkButton(
@@ -1096,7 +1105,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             updown_frame,
             text="AC확인",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=8, y=5) 
 
         upSafe = ctk.CTkButton(
@@ -1141,7 +1150,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             isSpread_frame,
             text="12시 징 확인",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=8, y=5)     
 
         spread_button = ctk.CTkButton(
@@ -1178,7 +1187,7 @@ class App(ctk.CTk):
             self,
             text="타워 교대?",
             text_color="black",
-            font=ctk.CTkFont(size=18),
+            font=ctk.CTkFont(family="맑은 고딕", size=18, weight="bold"),
             command=lambda: self.handle_button(15),
             fg_color="#a7d4ee",
             hover_color="#6eb6e1",
@@ -1209,7 +1218,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             leftone_frame,
             text="필드에 남은 분신",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=8, y=5)     
 
         ALeft = ctk.CTkButton(
@@ -1253,7 +1262,7 @@ class App(ctk.CTk):
         ctk.CTkLabel(
             where_frame,
             text="이동한 섬 확인",
-            font=ctk.CTkFont(size=15)
+            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
         ).place(x=8, y=5)
 
         Bsafe = ctk.CTkButton(
@@ -1296,7 +1305,8 @@ class App(ctk.CTk):
             border_width=3,
             border_color="#759bb3",
             width=120, 
-            height=30
+            height=30,
+            font=ctk.CTkFont(family="맑은 고딕", weight="bold", size=14),
         )
         reset_button.place(x=10, y=655)
         self.buttons[20] = reset_button
