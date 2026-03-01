@@ -56,7 +56,7 @@ class WindowB(ctk.CTkToplevel):
             width=370,
             height=37
         )
-        self.check_strat_frame.place(x=5, y=5)
+        self.check_strat_frame.place(x=5, y=368)
 
         self.check_strat_txt = ctk.CTkLabel(
             self.check_strat_frame,
@@ -72,7 +72,7 @@ class WindowB(ctk.CTkToplevel):
             width=370,
             height=358
             )
-        self.container.place(x=5, y=45)
+        self.container.place(x=5, y=5)
 
         # -----------십자 X자 안전지대-----------  
         self.xplus_frame = ctk.CTkFrame(
@@ -558,7 +558,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Idyllic Dream Helper")
-        self.geometry("350x745")
+        self.geometry("350x695")
         self.resizable(False, False)
         self.configure(fg_color="#f0fbff")
         self._btn_enabled: dict[int, bool] = {}
@@ -651,10 +651,10 @@ class App(ctk.CTk):
         self.click_control_frame = ctk.CTkFrame(
             self,
             width=160,
-            height=103,
+            height=104,
             fg_color="#cfeaf8"
         )
-        self.click_control_frame.place(x=180, y=467)
+        self.click_control_frame.place(x=180, y=426)
 
         self.lock_move = ctk.BooleanVar(value=False)
         self.ignore_click = ctk.BooleanVar(value=False)
@@ -798,10 +798,10 @@ class App(ctk.CTk):
         title_frame = ctk.CTkFrame(
             self,
             width=330,
-            height=80,
+            height=56,
             fg_color="#cfeaf8"
         )
-        title_frame.place(x=10, y=10)
+        title_frame.place(x=10, y=5)
 
         ctk.CTkLabel(
             title_frame, 
@@ -814,19 +814,19 @@ class App(ctk.CTk):
             text="Idyllic Dream Helper", 
             font=ctk.CTkFont(size=15)
         ).place(x=10, y=27)     
-
+        '''
         ctk.CTkLabel(
             title_frame, 
             text="외워야 할 기믹들을 버튼을 눌러 기록할 수 있습니다.", 
             font=ctk.CTkFont(size=13)
         ).place(x=10, y=50)
-
+        '''
         ctk.CTkLabel(
             self, 
             text="Ro Mary@Chocobo", 
             font=ctk.CTkFont(size=13),
             text_color="#6eb6e1"
-        ).place(x=220, y=707)      
+        ).place(x=220, y=657)      
 
         # ---------------------- App창 맨 위 고정 ------------------------
         self.app_topmost_var = ctk.BooleanVar(value=False)
@@ -842,7 +842,7 @@ class App(ctk.CTk):
             hover=False,
             border_width=3,
         )
-        self.app_topmost_checkbox.place(x=230, y=10)
+        self.app_topmost_checkbox.place(x=230, y=16)
 
         # ---------------------- 처리법 선택 ------------------------
         strats_frame = ctk.CTkFrame(
@@ -851,7 +851,7 @@ class App(ctk.CTk):
             height=70,
             fg_color="#cfeaf8"
         )
-        strats_frame.place(x=180, y=100)
+        strats_frame.place(x=180, y=68)
 
         strats_box = ctk.CTkComboBox(
             strats_frame,
@@ -885,7 +885,7 @@ class App(ctk.CTk):
             height=30,
             command=lambda: self.handle_button(21)
         )
-        main_button.place(x=180, y=175)
+        main_button.place(x=180, y=142)
         self.buttons[21] = main_button
 
         sub_button = ctk.CTkButton(
@@ -901,7 +901,7 @@ class App(ctk.CTk):
             height=30,
             command=lambda: self.handle_button(22)
         )
-        sub_button.place(x=263, y=175)
+        sub_button.place(x=263, y=142)
         self.buttons[22] = sub_button
 
         # ---------------------- 십자, X자 체크 ------------------------
@@ -911,7 +911,7 @@ class App(ctk.CTk):
             height=105,
             fg_color="#cfeaf8"
         )
-        first_frame.place(x=10, y=100)
+        first_frame.place(x=10, y=68)
 
         ctk.CTkLabel(
             first_frame,
@@ -956,7 +956,7 @@ class App(ctk.CTk):
             height=240,
             fg_color="#cfeaf8"
         )
-        macro_frame.place(x=10, y=215)
+        macro_frame.place(x=10, y=179)
         
         ctk.CTkLabel(
             macro_frame,
@@ -1091,7 +1091,7 @@ class App(ctk.CTk):
             height=190,
             fg_color="#cfeaf8"
         )
-        updown_frame.place(x=245, y=215)
+        updown_frame.place(x=245, y=179)
 
         ctk.CTkLabel(
             updown_frame,
@@ -1136,7 +1136,7 @@ class App(ctk.CTk):
             height=105,
             fg_color="#cfeaf8"
         )
-        isSpread_frame.place(x=10, y=466)
+        isSpread_frame.place(x=10, y=426)
 
         ctk.CTkLabel(
             isSpread_frame,
@@ -1187,7 +1187,7 @@ class App(ctk.CTk):
             width=92, 
             height=45
         )
-        swap_button.place(x=243, y=410)
+        swap_button.place(x=243, y=374)
         self.buttons[15] = swap_button
 
         line_frame = ctk.CTkFrame(
@@ -1196,7 +1196,7 @@ class App(ctk.CTk):
             height=4,
             fg_color="#7EA0B6"
         )
-        line_frame.place(x=10, y=580)
+        line_frame.place(x=10, y=535)
 
         leftone_frame = ctk.CTkFrame(
             self,
@@ -1204,7 +1204,7 @@ class App(ctk.CTk):
             height=105,
             fg_color="#cfeaf8"
         )
-        leftone_frame.place(x=10, y=595)
+        leftone_frame.place(x=10, y=545)
 
         ctk.CTkLabel(
             leftone_frame,
@@ -1248,7 +1248,7 @@ class App(ctk.CTk):
             height=105,
             fg_color="#cfeaf8"
         )
-        where_frame.place(x=180, y=595)
+        where_frame.place(x=180, y=545)
 
         ctk.CTkLabel(
             where_frame,
@@ -1298,7 +1298,7 @@ class App(ctk.CTk):
             width=120, 
             height=30
         )
-        reset_button.place(x=10, y=705)
+        reset_button.place(x=10, y=655)
         self.buttons[20] = reset_button
 
         self.disable_btn(21)
