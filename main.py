@@ -28,7 +28,6 @@ class WindowB(ctk.CTkToplevel):
 
         # X 버튼 막기 (닫히지 않게)
         self.protocol("WM_DELETE_WINDOW", lambda: None)
-        #self.overrideredirect(True)
 
         # 드래그 이동 구현
         self.bind("<ButtonPress-1>", self.start_move)
@@ -42,9 +41,6 @@ class WindowB(ctk.CTkToplevel):
         self.resizable(False, False)
         self.attributes("-topmost", True)
         self._blank_img = ctk.CTkImage(Image.new("RGBA", (1, 1), (0, 0, 0, 0)), size=(1, 1))      
-
-        #self.default_font = ctk.CTkFont(family="맑은 고딕", size=15)
-        #self.apply_font_recursively(self, self.default_font)
         self.reapply = None
         self.alpha = 1.0
         try:
@@ -108,7 +104,6 @@ class WindowB(ctk.CTkToplevel):
             width=100,
             height=100
         )
-        #self.simsang_frame.place(x=110, y=5)
         self.simsang_frame.place(x=5, y=124)
         self.simsang_label = ctk.CTkLabel(self.simsang_frame, text="")
         self.simsang_label.place(x=12, y=25)
@@ -173,7 +168,6 @@ class WindowB(ctk.CTkToplevel):
             width=75,
             height=100
         )
-        #self.check_frame.place(x=5, y=145)
         self.check_frame.place(x=110, y=5)
         self.check_label = ctk.CTkLabel(self.check_frame, text="")
         self.check_label.place(relx=0.5, rely=0.3, anchor="n")
@@ -563,7 +557,7 @@ class App(ctk.CTk):
         super().__init__()
         self.title("Idyllic Dream Helper")
         self.geometry("350x695")
-        #self.resizable(False, False)
+        self.resizable(False, False)
         self.configure(fg_color="#f0fbff")
         self._btn_enabled: dict[int, bool] = {}
         self._btn_normal_color: dict[int, any] = {}     
@@ -733,6 +727,39 @@ class App(ctk.CTk):
             self.attributes("-topmost", bool(enabled))
         except Exception:
             pass
+        
+    def apply_ui_scale(self, scale: float):
+        scale = float(scale)
+
+        ax, ay = self.winfo_x(), self.winfo_y()
+        bx, by = (0, 0)
+        if hasattr(self, "win_b") and self.win_b.winfo_exists():
+            bx, by = self.win_b.winfo_x(), self.win_b.winfo_y()
+        ctk.set_widget_scaling(scale)
+
+        base_aw, base_ah = 350, 695
+        base_bw, base_bh = 380, 408
+
+        new_aw, new_ah = int(base_aw * scale), int(base_ah * scale)
+        self.geometry(f"{new_aw}x{new_ah}+{ax}+{ay}")
+
+        if hasattr(self, "win_b") and self.win_b.winfo_exists():
+            new_bw, new_bh = int(base_bw * scale), int(base_bh * scale)
+            self.win_b.geometry(f"{new_bw}x{new_bh}+{bx}+{by}")
+
+        # 혹시 레이아웃 갱신 필요할 때
+        self.update_idletasks()
+        if hasattr(self, "win_b") and self.win_b.winfo_exists():
+            self.win_b.update_idletasks()
+
+    def on_ui_scale_selected(self, value: str):
+        try:
+            scale = int(value.replace("%", "").strip()) / 100.0
+        except Exception:
+            return
+        
+        scale = max(0.7, min(1.0, scale))
+        self.apply_ui_scale(scale)
 
     def on_strats_changed(self, value: str):
         self.reset_all()
@@ -803,7 +830,7 @@ class App(ctk.CTk):
         # 타이틀
         title_frame = ctk.CTkFrame(
             self,
-            width=330,
+            width=213,
             height=56,
             fg_color="#cfeaf8"
         )
@@ -813,20 +840,14 @@ class App(ctk.CTk):
             title_frame, 
             text="아르카디아의 꿈 헬퍼", 
             font=ctk.CTkFont(family="맑은 고딕", size=20, weight="bold")
-        ).place(x=10, y=3)    
+        ).place(x=7, y=3)    
 
         ctk.CTkLabel(
             title_frame, 
             text="Idyllic Dream Helper", 
             font=ctk.CTkFont(family="맑은 고딕", size=15)
         ).place(x=10, y=27)     
-        '''
-        ctk.CTkLabel(
-            title_frame, 
-            text="외워야 할 기믹들을 버튼을 눌러 기록할 수 있습니다.", 
-            font=ctk.CTkFont(size=13)
-        ).place(x=10, y=50)
-        '''
+    
         ctk.CTkLabel(
             self, 
             text="Ro Mary@Chocobo", 
@@ -835,13 +856,13 @@ class App(ctk.CTk):
         ).place(x=220, y=657)      
 
         # ---------------------- App창 맨 위 고정 ------------------------
-        self.app_topmost_var = ctk.BooleanVar(value=False)
+        app_topmost_var = ctk.BooleanVar(value=False)
 
-        self.app_topmost_checkbox = ctk.CTkCheckBox(
-            title_frame,
+        app_topmost_checkbox = ctk.CTkCheckBox(
+            self,
             text="맨 위 고정",
-            variable=self.app_topmost_var,
-            command=lambda: self.set_app_topmost(self.app_topmost_var.get()),
+            variable=app_topmost_var,
+            command=lambda: self.set_app_topmost(app_topmost_var.get()),
             checkbox_width=20,
             checkbox_height=20,
             border_color="#759bb3",
@@ -849,7 +870,28 @@ class App(ctk.CTk):
             border_width=3,
             font=ctk.CTkFont(family="맑은 고딕", weight="bold"),
         )
-        self.app_topmost_checkbox.place(x=230, y=16)
+        app_topmost_checkbox.place(x=230, y=9)
+
+        # ---------------------- 크기 설정 ------------------------
+        ctk.CTkLabel(
+            self, 
+            text="Scale",
+            font=ctk.CTkFont(family="맑은 고딕", size=15),
+            ).place(x=230, y=33)
+        scale_combo_var = ctk.StringVar(value="100%")
+        scale_combo = ctk.CTkComboBox(
+            self,
+            values=["100%", "90%", "80%", "70%"],
+            state="readonly",
+            button_color="#a7d4ee",
+            border_color="#a7d4ee",
+            button_hover_color="#6eb6e1",
+            variable=scale_combo_var,
+            width=70,
+            height=25,
+            command=self.on_ui_scale_selected, 
+        )
+        scale_combo.place(x=270, y=35)
 
         # ---------------------- 처리법 선택 ------------------------
         strats_frame = ctk.CTkFrame(
@@ -1104,8 +1146,8 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(
             updown_frame,
-            text="AC확인",
-            font=ctk.CTkFont(family="맑은 고딕", size=15, weight="bold")
+            text="AC양옆 확인",
+            font=ctk.CTkFont(family="맑은 고딕", size=14, weight="bold")
         ).place(x=8, y=5) 
 
         upSafe = ctk.CTkButton(
@@ -1187,7 +1229,7 @@ class App(ctk.CTk):
             self,
             text="타워 교대?",
             text_color="black",
-            font=ctk.CTkFont(family="맑은 고딕", size=18, weight="bold"),
+            font=ctk.CTkFont(family="맑은 고딕", size=17, weight="bold"),
             command=lambda: self.handle_button(15),
             fg_color="#a7d4ee",
             hover_color="#6eb6e1",
@@ -1346,10 +1388,6 @@ class App(ctk.CTk):
         if hasattr(self, "win_b") and self.win_b.winfo_exists():
             self.win_b.after(0, self.win_b.ensure_on_top)
             self.win_b.after(50, self.apply_b_controls)
-    '''        
-    def append_fix(self):
-        self.win_b.append_line("----------(수정)----------")
-    '''
 
     def apply_3to10_button_icons_by_strats(self):
         mapping = self.strategy.btn_icon_map
@@ -1371,8 +1409,6 @@ class App(ctk.CTk):
         last = getattr(self, last_attr)
 
         if last == other_n:
-            #if fix_on_switch:
-                #self.win_b.append_line("----------(수정)----------")
             self.enable_btn(other_n)
 
         self.disable_btn(new_n)
@@ -1408,10 +1444,7 @@ class App(ctk.CTk):
         if self.isSpread in (1, 2):
             result = self.get_spread_result(self.last_btn_3_10, self.isSpread)
             if result is not None:
-                #self.win_b.append_line(result)
                 self.apply_spread_visual(result)
-            #else:
-                #self.win_b.append_line("(!)표식 선택 필요.")
     
     def get_3to10_label(self, n: int) -> str:
         return self.strategy.text_3_10.get(n, f"버튼 {n}")
@@ -1466,10 +1499,7 @@ class App(ctk.CTk):
 
         # 버튼마다 다른 텍스트 출력
     def handle_3_to_10(self, n: int):
-        #self.win_b.append_line(self.get_3to10_label(n))
-
         if self.last_btn_3_10 is not None and self.last_btn_3_10 != n:
-            #self.win_b.append_line("----------(수정)----------")
             self.enable_btn(self.last_btn_3_10)
 
         self.disable_btn(n)
@@ -1480,7 +1510,6 @@ class App(ctk.CTk):
         if self.isSpread in (1, 2):
             result = self.get_spread_result(self.last_btn_3_10, self.isSpread)
             if result:
-                #self.win_b.append_line(result)
                 self.apply_spread_visual(result)
 
     def update_safe_spot_image_by_state(self):
@@ -1510,7 +1539,6 @@ class App(ctk.CTk):
                 last_attr="last_icon",
                 other_n=2
             )
-            #self.win_b.append_line("십자")
             self.win_b.set_xplus_image(self.display_map.get(1))
             self.update_xplus_strat_label()
 
@@ -1520,7 +1548,6 @@ class App(ctk.CTk):
                 last_attr="last_icon",
                 other_n=1
             )
-            #self.win_b.append_line("X자")
             self.win_b.set_xplus_image(self.display_map.get(2))
             self.update_xplus_strat_label()
 
@@ -1533,7 +1560,6 @@ class App(ctk.CTk):
                 last_attr="last_updown",
                 other_n=12
             )
-            #self.win_b.append_line("위쪽 안전")
             self.win_b.set_simsang_image(self.display_map.get(3))
             self.update_safe_spot_image_by_state()
 
@@ -1543,7 +1569,6 @@ class App(ctk.CTk):
                 last_attr="last_updown",
                 other_n=11
             )
-            #self.win_b.append_line("아래쪽 안전")
             self.win_b.set_simsang_image(self.display_map.get(4))
             self.update_safe_spot_image_by_state()
 
@@ -1553,7 +1578,6 @@ class App(ctk.CTk):
                 last_attr="last_spreadstack",
                 other_n=14
             )
-            #self.win_b.append_line("산개")
             self.set_is_spread(1)
 
         elif n == 14:
@@ -1562,13 +1586,11 @@ class App(ctk.CTk):
                 last_attr="last_spreadstack",
                 other_n=13
             )
-            #self.win_b.append_line("쉐어")
             self.set_is_spread(2)
 
         elif n == 15:
             self.toggle_15_on = not self.toggle_15_on
             self.win_b.set_shift_status(self.toggle_15_on)
-            #self.win_b.append_line("교대" if self.toggle_15_on else "교대 해제")
 
         elif n == 16:
             self.handle_exclusive_pair(
@@ -1576,7 +1598,6 @@ class App(ctk.CTk):
                 last_attr="last_clone",
                 other_n=17,
             )
-            #self.win_b.append_line("A 남음")
             self.update_safe_spot_image_by_state()
 
         elif n == 17:
@@ -1585,7 +1606,6 @@ class App(ctk.CTk):
                 last_attr="last_clone",
                 other_n=16,
             )
-            #self.win_b.append_line("C 남음")
             self.update_safe_spot_image_by_state()
 
         elif n == 18:
@@ -1594,7 +1614,6 @@ class App(ctk.CTk):
                 last_attr="last_move",
                 other_n=19
             )
-            #self.win_b.append_line("오른쪽 이동")
             self.win_b.set_safe_isl_image(self.button_icons["Bmark"])
 
         elif n == 19:
@@ -1603,7 +1622,6 @@ class App(ctk.CTk):
                 last_attr="last_move",
                 other_n=18
             )
-            #self.win_b.append_line("왼쪽 이동")
             self.win_b.set_safe_isl_image(self.button_icons["Dmark"])
 
         elif n == 20:
@@ -1615,7 +1633,6 @@ class App(ctk.CTk):
                 last_attr="last_main",
                 other_n=22,
             )
-            #self.win_b.append_line("메인조 변경")
             self.update_xplus_strat_label()
 
         elif n == 22:
@@ -1624,7 +1641,6 @@ class App(ctk.CTk):
                 last_attr="last_main",
                 other_n=21,
             )
-            #self.win_b.append_line("서브조 변경")
             self.update_xplus_strat_label()
 
         #else:
