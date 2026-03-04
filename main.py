@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
+import tkinter as tk
+from tkinter import ttk
 import sys, os
 from strategies import STRATEGIES, Strategy
 
@@ -28,6 +30,7 @@ class WindowB(ctk.CTkToplevel):
 
         # X 버튼 막기 (닫히지 않게)
         self.protocol("WM_DELETE_WINDOW", lambda: None)
+        #self.overrideredirect(True)
 
         # 드래그 이동 구현
         self.bind("<ButtonPress-1>", self.start_move)
@@ -41,6 +44,9 @@ class WindowB(ctk.CTkToplevel):
         self.resizable(False, False)
         self.attributes("-topmost", True)
         self._blank_img = ctk.CTkImage(Image.new("RGBA", (1, 1), (0, 0, 0, 0)), size=(1, 1))      
+
+        #self.default_font = ctk.CTkFont(family="맑은 고딕", size=15)
+        #self.apply_font_recursively(self, self.default_font)
         self.reapply = None
         self.alpha = 1.0
         try:
@@ -104,6 +110,7 @@ class WindowB(ctk.CTkToplevel):
             width=100,
             height=100
         )
+        #self.simsang_frame.place(x=110, y=5)
         self.simsang_frame.place(x=5, y=124)
         self.simsang_label = ctk.CTkLabel(self.simsang_frame, text="")
         self.simsang_label.place(x=12, y=25)
@@ -157,7 +164,7 @@ class WindowB(ctk.CTkToplevel):
         self.is_hitbox_label = ctk.CTkLabel(
             self.safe_isl_frame,
             text="",
-            font=ctk.CTkFont(family="맑은 고딕", size=16, weight="bold")
+            font=ctk.CTkFont(family="맑은 고딕", size=14, weight="bold")
         )
         self.is_hitbox_label.place(relx=0.5, rely=0.95, anchor="s")
         
@@ -168,6 +175,7 @@ class WindowB(ctk.CTkToplevel):
             width=75,
             height=100
         )
+        #self.check_frame.place(x=5, y=145)
         self.check_frame.place(x=110, y=5)
         self.check_label = ctk.CTkLabel(self.check_frame, text="")
         self.check_label.place(relx=0.5, rely=0.3, anchor="n")
@@ -881,7 +889,7 @@ class App(ctk.CTk):
         scale_combo_var = ctk.StringVar(value="100%")
         scale_combo = ctk.CTkComboBox(
             self,
-            values=["100%", "90%", "80%", "70%"],
+            values=["100%", "95%", "90%", "80%"],
             state="readonly",
             button_color="#a7d4ee",
             border_color="#a7d4ee",
@@ -1523,10 +1531,10 @@ class App(ctk.CTk):
 
         if (u == 11 and c == 16) or (u == 12 and c == 17):
             self.win_b.set_safe_spot_image(self.safe_spot_img_map["rl"])
-            self.win_b.set_is_hitbox_text("히트박스 안")
+            self.win_b.set_is_hitbox_text("히트박스 안(편안)")
         elif (u == 11 and c == 17) or (u == 12 and c == 16):
             self.win_b.set_safe_spot_image(self.safe_spot_img_map["ud"])
-            self.win_b.set_is_hitbox_text("히트박스 바깥")
+            self.win_b.set_is_hitbox_text("히트박스 바깥(불편)")
         else:
             self.win_b.set_safe_spot_image(None)
             self.win_b.set_is_hitbox_text("")
